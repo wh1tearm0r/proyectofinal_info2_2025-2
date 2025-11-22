@@ -4,6 +4,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include "heroe.h"
+#include "enemigo.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,6 +20,11 @@ int main(int argc, char *argv[])
 
     _heroe -> setFlag(QGraphicsItem::ItemIsFocusable);
     _heroe->setFocus();
+
+    enemigo * _enemigo = new enemigo();
+    _enemigo -> setRect(100,200,100,100);
+    scene -> addItem(_enemigo);
+
 
     QGraphicsView * view = new QGraphicsView(scene);
     view->setFixedSize(800, 600);

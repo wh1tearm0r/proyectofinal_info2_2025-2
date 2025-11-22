@@ -3,7 +3,6 @@
 
 #include "personaje.h"
 #include <QKeyEvent>
-#include <QGraphicsRectItem>
 
 class heroe : public personaje {
 public:
