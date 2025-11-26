@@ -9,7 +9,15 @@
 #include <QDebug>
 #include <stdlib.h> // rand()
 
+bool Enemigo::juegoPausado = false;
+
+void Enemigo::pausarJuego(bool estado) {
+    juegoPausado = estado;
+}
+
 Enemigo::Enemigo() {
+
+    if (juegoPausado) return;
 
     setRect(0, 0, 20, 10);
     direccion = (rand() % 2 == 0) ? 1 : -1;
@@ -29,27 +37,29 @@ Enemigo::Enemigo() {
 }
 
 void Enemigo::mover() {
-    // Detectar colisión con jugador
+
+    if (juegoPausado) return;
+
     QList<QGraphicsItem*> colisiones = collidingItems();
     for (int i = 0; i < colisiones.size(); i++) {
         if (typeid(*(colisiones[i])) == typeid(Jugador)) {
 
-            // Eliminar bala actual
             scene()->removeItem(this);
             delete this;
 
-            // Mostrar ventana Game Over con opciones
+            Enemigo::pausarJuego(true);
+
             QMessageBox msgBox;
             msgBox.setWindowTitle("Game Over");
-            msgBox.setText("Has sido alcanzado por una bala.");
-            msgBox.setInformativeText("¿Qué deseas hacer?");
+            msgBox.setText("Prueba a esquivar las balas...");
+            msgBox.setInformativeText("¿Qué vas a hacer?");
             msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Close);
             msgBox.setDefaultButton(QMessageBox::Retry);
 
             int ret = msgBox.exec();
 
             if (ret == QMessageBox::Retry) {
-                // Reiniciar solo la escena (nivel)
+                // Reiniciar escena
                 QGraphicsScene *escenaActual = colisiones[i]->scene();
                 QList<QGraphicsItem*> elementos = escenaActual->items();
 
@@ -61,7 +71,7 @@ void Enemigo::mover() {
 
                 // Crear un nuevo jugador en la misma escena
                 Jugador *nuevoJugador = new Jugador();
-                nuevoJugador->setRect(0, 0, 100, 100);
+                nuevoJugador->setRect(0, 0, 60, 100);
                 nuevoJugador->setBrush(Qt::blue);
                 escenaActual->addItem(nuevoJugador);
 
@@ -69,13 +79,14 @@ void Enemigo::mover() {
                 nuevoJugador->setFocus();
                 nuevoJugador->setPos(350, 500);
 
-                // Reiniciar aparición de balas/enemigos
+                // Reiniciar enemigos
                 QTimer *timer = new QTimer();
                 QObject::connect(timer, SIGNAL(timeout()), nuevoJugador, SLOT(aparecer()));
                 timer->start(500);
 
+                Enemigo::pausarJuego(false);
+
             } else {
-                // Cerrar el juego
                 qApp->exit(0);
             }
 

@@ -8,6 +8,8 @@ class Enemigo:public QObject, public QGraphicsRectItem{
     Q_OBJECT
 public:
     Enemigo();
+    static bool juegoPausado;
+    static void pausarJuego(bool estado);
 public slots:
     void mover();
 private:

@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 
     //Crear un Item
     Jugador * jugador = new Jugador();
-    jugador->setRect(0,0,80,80);
+    jugador->setRect(0,0,60,100);
     jugador ->setBrush(Qt::blue);
     scene ->addItem(jugador);
 
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
     QTimer * timer= new QTimer();
     QObject::connect(timer,SIGNAL(timeout()),jugador,SLOT(aparecer()));
-    timer ->start(500);
+    timer ->start(450);
 
     return a.exec();
 }
