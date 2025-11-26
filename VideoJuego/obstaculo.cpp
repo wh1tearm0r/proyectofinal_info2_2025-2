@@ -74,6 +74,7 @@ void Obstaculo::mover() {
                 nuevoJugador->setRect(0, 0, 60, 100);
                 nuevoJugador->setBrush(Qt::blue);
                 escenaActual->addItem(nuevoJugador);
+                escenaActual->addItem(nuevoJugador->textoTiempo);
 
                 nuevoJugador->setFlag(QGraphicsItem::ItemIsFocusable);
                 nuevoJugador->setFocus();

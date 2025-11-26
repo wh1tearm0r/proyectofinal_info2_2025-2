@@ -14,12 +14,17 @@ Jugador::Jugador() : Personaje() {
     temporizador = new QTimer(this);
     connect(temporizador, SIGNAL(timeout()), this, SLOT(actualizarTiempo()));
     temporizador->start(100);
+
+    textoTiempo = new QGraphicsTextItem();
+    textoTiempo->setDefaultTextColor(Qt::black);
+    textoTiempo->setFont(QFont("Arial", 16, QFont::Bold));
+    textoTiempo->setPos(10, 10);
+
 }
 
 void Jugador::mover(int dx, int dy) {
     qreal nuevoX = x() + dx;
     qreal nuevoY = y() + dy;
-
     if (validarMovimiento(nuevoX, nuevoY)) {
         setPos(nuevoX, nuevoY);
     }
@@ -33,7 +38,15 @@ void Jugador::actualizarEstado() {
 void Jugador::actualizarTiempo() {
     if (Obstaculo::juegoPausado) return;
 
-    if (reloj.elapsed() >= tiempoRestante) {
+
+    int tiempoTranscurrido = reloj.elapsed();
+    int tiempoRestante = (tiempoMaximo - tiempoTranscurrido) / 1000; // segundos
+
+    // Actualizar texto
+    textoTiempo->setPlainText(QString("Tiempo restante: %1 s").arg(tiempoRestante));
+
+
+    if (tiempoTranscurrido >= tiempoMaximo) {
         Obstaculo::pausarJuego(true);
         temporizador->stop();
 
