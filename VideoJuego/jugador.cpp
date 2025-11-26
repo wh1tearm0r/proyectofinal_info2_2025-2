@@ -4,7 +4,29 @@
 #include "Enemigo.h"
 #include <QDebug>
 #include <QGraphicsScene>
+#include <QApplication>
 
+Jugador::Jugador() {
+    reloj.start();
+    temporizador = new QTimer(this);
+    connect(temporizador, SIGNAL(timeout()), this, SLOT(actualizarTiempo()));
+    temporizador->start(100);
+}
+
+void Jugador::actualizarTiempo() {
+    if (Enemigo::juegoPausado) return;
+
+    if (reloj.elapsed() >= Jugador::tiempoRestante) {
+        Enemigo::pausarJuego(true);
+        temporizador->stop();
+
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("¡Nivel completado!");
+        msgBox.setStandardButtons(QMessageBox::Close);
+        msgBox.setDefaultButton(QMessageBox::Close);
+        qApp->exit(0);
+    }
+}
 void Jugador::keyPressEvent(QKeyEvent *event)
 {
     int step = 20;
@@ -31,9 +53,8 @@ void Jugador::keyPressEvent(QKeyEvent *event)
     }
 }
 
-
-
 void Jugador::aparecer(){
     Enemigo * enemigo =new Enemigo();
     scene()->addItem(enemigo);
 }
+
