@@ -18,6 +18,8 @@ int main(int argc, char *argv[])
     jugador->setRect(0,0,60,100);
     jugador ->setBrush(Qt::blue);
     scene ->addItem(jugador);
+    scene->addItem(jugador->textoTiempo);
+
 
     jugador->setFlag(QGraphicsItem::ItemIsFocusable);
     jugador->setFocus();

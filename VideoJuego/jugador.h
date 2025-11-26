@@ -5,18 +5,20 @@
 #include <QKeyEvent>
 #include <QTimer>
 #include <QElapsedTimer>
+#include <QGraphicsTextItem>
+
 
 class Jugador : public Personaje {
     Q_OBJECT
 public:
     Jugador();
-
     // Implementación de métodos abstractos
     void mover(int dx, int dy) override;
     void actualizarEstado() override;
 
     // Métodos específicos de Jugador
     void keyPressEvent(QKeyEvent *event);
+    QGraphicsTextItem *textoTiempo = nullptr;
 
 public slots:
     void aparecer();
@@ -25,7 +27,7 @@ public slots:
 private:
     QTimer *temporizador;
     QElapsedTimer reloj;
-    const int tiempoRestante = 20000;
+    const int tiempoMaximo = 20000;
 };
 
 #endif // JUGADOR_H
