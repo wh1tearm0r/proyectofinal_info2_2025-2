@@ -1,4 +1,4 @@
-#ifndef BALA_H
+﻿#ifndef BALA_H
 #define BALA_H
 
 #include <QGraphicsRectItem>

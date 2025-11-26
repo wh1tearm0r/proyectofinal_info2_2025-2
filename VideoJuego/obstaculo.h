@@ -16,4 +16,4 @@ private:
 int direccion;
 };
 
-#endif // OBSTACULO_H
+#endif // ENEMIGO_H

@@ -1,5 +1,5 @@
-#include "Bala.h"
-#include "Enemigo.h"
+﻿#include "Bala.h"
+#include "Obstaculo.h"
 #include <QTimer>
 #include <QObject>
 #include <QGraphicsScene>
@@ -15,7 +15,7 @@ Bala::Bala() {
 void Bala::mover(){
     QList <QGraphicsItem *>colliding_items=collidingItems();
     for (int i=0, n=colliding_items.size(); i<n;i++){
-        if (typeid(*(colliding_items[i]))==typeid(Enemigo)){
+        if (typeid(*(colliding_items[i]))==typeid(Obstaculo)){
             //remover ambos
             scene()->removeItem(colliding_items[i]);
             scene()->removeItem(this);

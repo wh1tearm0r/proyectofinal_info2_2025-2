@@ -6,17 +6,34 @@
 #include <QGraphicsScene>
 #include <QApplication>
 
-Jugador::Jugador() {
+Jugador::Jugador() : Personaje() {
+    velocidad = 20; // Velocidad específica del jugador
+    vida = 100;
+
     reloj.start();
     temporizador = new QTimer(this);
     connect(temporizador, SIGNAL(timeout()), this, SLOT(actualizarTiempo()));
     temporizador->start(100);
 }
 
+void Jugador::mover(int dx, int dy) {
+    qreal nuevoX = x() + dx;
+    qreal nuevoY = y() + dy;
+
+    if (validarMovimiento(nuevoX, nuevoY)) {
+        setPos(nuevoX, nuevoY);
+    }
+}
+
+void Jugador::actualizarEstado() {
+    // Aquí puedes agregar lógica para actualizar el estado del jugador
+    // Por ejemplo: verificar colisiones, actualizar animaciones, etc.
+}
+
 void Jugador::actualizarTiempo() {
     if (Obstaculo::juegoPausado) return;
 
-    if (reloj.elapsed() >= Jugador::tiempoRestante) {
+    if (reloj.elapsed() >= tiempoRestante) {
         Obstaculo::pausarJuego(true);
         temporizador->stop();
 
@@ -27,34 +44,29 @@ void Jugador::actualizarTiempo() {
         qApp->exit(0);
     }
 }
-void Jugador::keyPressEvent(QKeyEvent *event)
-{
-    int step = 20;
 
+void Jugador::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_A:
-        if (pos().x() > 100)
-            setPos(x() - step, y());
+        mover(-velocidad, 0);
         break;
     case Qt::Key_D:
-        if (pos().x() + rect().width() < 700)
-            setPos(x() + step, y());
+        mover(velocidad, 0);
         break;
     case Qt::Key_W:
-        if (pos().y() > 0)
-            setPos(x(), y() - step);
+        mover(0, -velocidad);
         break;
     case Qt::Key_S:
-        if (pos().y() + rect().height() < 600)
-            setPos(x(), y() + step);
+        mover(0, velocidad);
         break;
     default:
         break;
     }
+
+    actualizarEstado();
 }
 
-void Jugador::aparecer(){
-    Obstaculo * obstaculo =new Obstaculo();
-    scene()->addItem(obstaculo);
+void Jugador::aparecer() {
+    Obstaculo *bala = new Obstaculo();
+    scene()->addItem(bala);
 }
-
