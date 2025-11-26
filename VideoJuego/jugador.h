@@ -1,22 +1,29 @@
-#ifndef JUGADOR_H
+﻿#ifndef JUGADOR_H
 #define JUGADOR_H
 
-#include <QGraphicsRectItem>
+#include "Personaje.h"
 #include <QKeyEvent>
-#include <QObject>
-#include <Qtimer>
+#include <QTimer>
 #include <QElapsedTimer>
 
-class Jugador:public QObject,public QGraphicsRectItem{
+class Jugador : public Personaje {
     Q_OBJECT
 public:
-    void keyPressEvent(QKeyEvent * event);
     Jugador();
+
+    // Implementación de métodos abstractos
+    void mover(int dx, int dy) override;
+    void actualizarEstado() override;
+
+    // Métodos específicos de Jugador
+    void keyPressEvent(QKeyEvent *event);
+
 public slots:
     void aparecer();
     void actualizarTiempo();
+
 private:
-    QTimer *temporizador = nullptr;
+    QTimer *temporizador;
     QElapsedTimer reloj;
     const int tiempoRestante = 20000;
 };

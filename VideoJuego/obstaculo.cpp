@@ -1,4 +1,4 @@
-#include "Enemigo.h"
+﻿#include "Obstaculo.h"
 #include "Jugador.h"
 #include <typeinfo>
 #include <QMessageBox>
@@ -9,13 +9,13 @@
 #include <QDebug>
 #include <stdlib.h> // rand()
 
-bool Enemigo::juegoPausado = false;
+bool Obstaculo::juegoPausado = false;
 
-void Enemigo::pausarJuego(bool estado) {
+void Obstaculo::pausarJuego(bool estado) {
     juegoPausado = estado;
 }
 
-Enemigo::Enemigo() {
+Obstaculo::Obstaculo() {
 
     if (juegoPausado) return;
 
@@ -36,7 +36,7 @@ Enemigo::Enemigo() {
     timer->start(30);
 }
 
-void Enemigo::mover() {
+void Obstaculo::mover() {
 
     if (juegoPausado) return;
 
@@ -47,7 +47,7 @@ void Enemigo::mover() {
             scene()->removeItem(this);
             delete this;
 
-            Enemigo::pausarJuego(true);
+            Obstaculo::pausarJuego(true);
 
             QMessageBox msgBox;
             msgBox.setWindowTitle("Game Over");
@@ -84,7 +84,7 @@ void Enemigo::mover() {
                 QObject::connect(timer, SIGNAL(timeout()), nuevoJugador, SLOT(aparecer()));
                 timer->start(500);
 
-                Enemigo::pausarJuego(false);
+                Obstaculo::pausarJuego(false);
 
             } else {
                 qApp->exit(0);
