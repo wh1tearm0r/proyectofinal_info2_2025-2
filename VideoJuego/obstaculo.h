@@ -1,13 +1,13 @@
-#ifndef ENEMIGO_H
-#define ENEMIGO_H
+﻿#ifndef OBSTACULO_H
+#define OBSTACULO_H
 
 #include <QGraphicsRectItem>
 #include <QObject>
 
-class Enemigo:public QObject, public QGraphicsRectItem{
+class Obstaculo:public QObject, public QGraphicsRectItem{
     Q_OBJECT
 public:
-    Enemigo();
+    Obstaculo();
     static bool juegoPausado;
     static void pausarJuego(bool estado);
 public slots:
@@ -16,4 +16,4 @@ private:
 int direccion;
 };
 
-#endif // ENEMIGO_H
+#endif // OBSTACULO_H

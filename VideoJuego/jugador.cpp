@@ -1,7 +1,7 @@
-#include <QMessageBox>
+﻿#include <QMessageBox>
 #include "Jugador.h"
 #include "Bala.h"
-#include "Enemigo.h"
+#include "Obstaculo.h"
 #include <QDebug>
 #include <QGraphicsScene>
 #include <QApplication>
@@ -14,10 +14,10 @@ Jugador::Jugador() {
 }
 
 void Jugador::actualizarTiempo() {
-    if (Enemigo::juegoPausado) return;
+    if (Obstaculo::juegoPausado) return;
 
     if (reloj.elapsed() >= Jugador::tiempoRestante) {
-        Enemigo::pausarJuego(true);
+        Obstaculo::pausarJuego(true);
         temporizador->stop();
 
         QMessageBox msgBox;
@@ -54,7 +54,7 @@ void Jugador::keyPressEvent(QKeyEvent *event)
 }
 
 void Jugador::aparecer(){
-    Enemigo * enemigo =new Enemigo();
-    scene()->addItem(enemigo);
+    Obstaculo * obstaculo =new Obstaculo();
+    scene()->addItem(obstaculo);
 }
 
