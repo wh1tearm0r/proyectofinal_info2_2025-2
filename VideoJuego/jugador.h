@@ -6,7 +6,7 @@
 #include <QTimer>
 #include <QElapsedTimer>
 #include <QGraphicsTextItem>
-
+#include <QGraphicsPixmapItem>
 
 class Jugador : public Personaje {
     Q_OBJECT
