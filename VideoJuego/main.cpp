@@ -5,6 +5,7 @@
 #include "Jugador.h"
 #include <QGraphicsView>
 #include <QTimer>
+#include <QGraphicsPixmapItem>
 
 int main(int argc, char *argv[])
 {
