@@ -3,17 +3,24 @@
 
 #include <QGraphicsRectItem>
 #include <QObject>
+#include <QGraphicsScene>
 
-class Obstaculo:public QObject, public QGraphicsRectItem{
+class Obstaculo : public QObject, public QGraphicsRectItem {
     Q_OBJECT
+
 public:
-    Obstaculo();
-    static bool juegoPausado;
+    Obstaculo(QGraphicsItem *parent = nullptr);
+    virtual ~Obstaculo() {}
+
     static void pausarJuego(bool estado);
+    static bool juegoPausado;
+
 public slots:
-    void mover();
-private:
-int direccion;
+    virtual void mover() = 0; // Método virtual puro
+
+protected:
+    int direccion;
+    void manejarColision();
 };
 
-#endif // ENEMIGO_H
+#endif // OBSTACULO_H

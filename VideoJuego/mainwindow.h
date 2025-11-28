@@ -28,6 +28,7 @@ private slots:
     void iniciarNivel3();
     void siguienteNivel();
     void gameOver();
+    void volverAlMenu();
 
 private:
     Ui::MainWindow *ui;
@@ -40,9 +41,16 @@ private:
 
     // Control de niveles
     int nivelActual;
+    bool enJuego;
+
+    // Widgets del menú
+    QWidget *menuWidget;
 
     // Métodos auxiliares
     void configurarEscena();
+    void configurarMenu();
+    void mostrarMenu();
+    void ocultarMenu();
     void limpiarNivel();
     void cargarNivel(int nivel);
 };
