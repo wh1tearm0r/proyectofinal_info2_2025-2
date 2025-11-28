@@ -62,7 +62,6 @@ void Obstaculo::manejarColision() {
                 nuevoJugador->setFocus();
                 nuevoJugador->setPos(350, 500);
 
-                // Reiniciar enemigos
                 QTimer *timer = new QTimer();
                 QObject::connect(timer, SIGNAL(timeout()), nuevoJugador, SLOT(aparecer()));
                 timer->start(500);

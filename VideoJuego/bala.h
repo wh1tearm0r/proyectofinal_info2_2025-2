@@ -12,7 +12,7 @@ public:
     ~Bala() {}
 
 public slots:
-    void mover() override; // Implementación del método virtual puro
+    void mover() override;
 
 private:
     QTimer *timer;

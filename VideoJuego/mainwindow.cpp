@@ -221,15 +221,10 @@ void MainWindow::iniciarNivel2()
     jugador->setBrush(Qt::green);
     jugador->setFlag(QGraphicsItem::ItemIsFocusable);
     jugador->setFocus();
-
     jugador->setPos(view->width()/2 - jugador->rect().width()/2,
                     view->height() - jugador->rect().height());
-    scene->addItem(jugador);
-    scene->addItem(jugador->textoTiempo);
 
-    if(!timer) {
-        timer = new QTimer(this);
-    }
+
 }
 
 void MainWindow::iniciarNivel3()

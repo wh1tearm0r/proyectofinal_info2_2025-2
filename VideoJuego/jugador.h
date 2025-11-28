@@ -17,7 +17,7 @@ public:
     void actualizarEstado() override;
 
     // Métodos específicos de Jugador
-    void keyPressEvent(QKeyEvent *event);
+    void keyPressEvent(QKeyEvent *event) override;
     QGraphicsTextItem *textoTiempo = nullptr;
 
 public slots:

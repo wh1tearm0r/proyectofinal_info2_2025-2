@@ -14,14 +14,16 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     obstaculo.cpp \
-    personaje.cpp
+    personaje.cpp \
+    personas.cpp
 
 HEADERS += \
     bala.h \
     jugador.h \
     mainwindow.h \
     obstaculo.h \
-    personaje.h
+    personaje.h \
+    personas.h
 
 FORMS += \
     mainwindow.ui
