@@ -7,7 +7,8 @@
 #include <QTimer>
 #include <QGraphicsScene>
 #include <QDebug>
-#include <stdlib.h> // rand()
+#include <QBrush>
+#include <stdlib.h>
 
 bool Obstaculo::juegoPausado = false;
 
@@ -15,37 +16,19 @@ void Obstaculo::pausarJuego(bool estado) {
     juegoPausado = estado;
 }
 
-Obstaculo::Obstaculo() {
-
-    if (juegoPausado) return;
-
-    setRect(0, 0, 20, 10);
-    direccion = (rand() % 2 == 0) ? 1 : -1;
-    int rand_y = rand() % 550;
-
-    if (direccion == 1) {
-        setPos(0, rand_y);
-        setBrush(Qt::red);
-    } else {
-        setPos(780, rand_y);
-        setBrush(Qt::darkRed);
-    }
-
-    QTimer *timer = new QTimer();
-    connect(timer, SIGNAL(timeout()), this, SLOT(mover()));
-    timer->start(30);
+Obstaculo::Obstaculo(QGraphicsItem *parent) : QGraphicsRectItem(parent) {
+    // Constructor base - las subclases definirán su forma y posición
+    direccion = 0;
 }
 
-void Obstaculo::mover() {
-
-    if (juegoPausado) return;
-
+void Obstaculo::manejarColision() {
     QList<QGraphicsItem*> colisiones = collidingItems();
+
     for (int i = 0; i < colisiones.size(); i++) {
         if (typeid(*(colisiones[i])) == typeid(Jugador)) {
 
-            scene()->removeItem(this);
-            delete this;
+            QGraphicsScene *escenaActual = scene();
+            escenaActual->removeItem(this);
 
             Obstaculo::pausarJuego(true);
 
@@ -60,7 +43,6 @@ void Obstaculo::mover() {
 
             if (ret == QMessageBox::Retry) {
                 // Reiniciar escena
-                QGraphicsScene *escenaActual = colisiones[i]->scene();
                 QList<QGraphicsItem*> elementos = escenaActual->items();
 
                 // Eliminar todos los elementos de la escena
@@ -72,7 +54,7 @@ void Obstaculo::mover() {
                 // Crear un nuevo jugador en la misma escena
                 Jugador *nuevoJugador = new Jugador();
                 nuevoJugador->setRect(0, 0, 60, 100);
-                nuevoJugador->setBrush(Qt::blue);
+                nuevoJugador->setBrush(QBrush(Qt::blue));
                 escenaActual->addItem(nuevoJugador);
                 escenaActual->addItem(nuevoJugador->textoTiempo);
 
@@ -80,7 +62,6 @@ void Obstaculo::mover() {
                 nuevoJugador->setFocus();
                 nuevoJugador->setPos(350, 500);
 
-                // Reiniciar enemigos
                 QTimer *timer = new QTimer();
                 QObject::connect(timer, SIGNAL(timeout()), nuevoJugador, SLOT(aparecer()));
                 timer->start(500);
@@ -91,16 +72,8 @@ void Obstaculo::mover() {
                 qApp->exit(0);
             }
 
+            delete this;
             return;
         }
-    }
-
-    // Movimiento horizontal normal
-    setPos(x() + direccion * 10, y());
-
-    // Eliminar bala si sale de los límites
-    if (x() < -rect().width() || x() > 800) {
-        scene()->removeItem(this);
-        delete this;
     }
 }

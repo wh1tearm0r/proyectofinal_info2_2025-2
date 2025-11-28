@@ -7,7 +7,7 @@
 #include <QApplication>
 
 Jugador::Jugador() : Personaje() {
-    velocidad = 20; // Velocidad específica del jugador
+    velocidad = 20;
     vida = 100;
 
     reloj.start();
@@ -19,7 +19,6 @@ Jugador::Jugador() : Personaje() {
     textoTiempo->setDefaultTextColor(Qt::black);
     textoTiempo->setFont(QFont("Arial", 16, QFont::Bold));
     textoTiempo->setPos(10, 10);
-
 }
 
 void Jugador::mover(int dx, int dy) {
@@ -38,13 +37,11 @@ void Jugador::actualizarEstado() {
 void Jugador::actualizarTiempo() {
     if (Obstaculo::juegoPausado) return;
 
-
     int tiempoTranscurrido = reloj.elapsed();
     int tiempoRestante = (tiempoMaximo - tiempoTranscurrido) / 1000; // segundos
 
     // Actualizar texto
     textoTiempo->setPlainText(QString("Tiempo restante: %1 s").arg(tiempoRestante));
-
 
     if (tiempoTranscurrido >= tiempoMaximo) {
         Obstaculo::pausarJuego(true);
@@ -80,6 +77,7 @@ void Jugador::keyPressEvent(QKeyEvent *event) {
 }
 
 void Jugador::aparecer() {
-    Obstaculo *bala = new Obstaculo();
+    // Cambio: ahora creamos objetos Bala en lugar de Obstaculo
+    Bala *bala = new Bala();
     scene()->addItem(bala);
 }
