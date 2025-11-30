@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QPixmap>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -40,6 +41,9 @@ void MainWindow::configurarEscena()
     // Crear escena
     scene = new QGraphicsScene(this);
     scene->setSceneRect(0, 0, 800, 600);
+
+    QPixmap fondo(":/imagenes/fondo.png");
+    scene->setBackgroundBrush(fondo.scaled(800, 600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
     // Crear vista
     view = new QGraphicsView(scene, this);
@@ -153,6 +157,10 @@ void MainWindow::limpiarNivel()
     // Limpiar la escena
     scene->clear();
     jugador = nullptr;
+
+    // Restaurar fondo al limpiar
+    QPixmap fondo(":/imagenes/fondo.png");
+    scene->setBackgroundBrush(fondo.scaled(800, 600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 }
 
 void MainWindow::cargarNivel(int nivel)
@@ -186,14 +194,13 @@ void MainWindow::iniciarNivel1()
 
     // Crear jugador
     jugador = new Jugador();
-    jugador->setRect(0, 0, 60, 100);
-    jugador->setBrush(Qt::blue);
+    jugador->setPixmap(QPixmap(":/imagenes/jugador_idle.png").scaled(60, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     jugador->setFlag(QGraphicsItem::ItemIsFocusable);
     jugador->setFocus();
 
     // Posicionar jugador
-    jugador->setPos(view->width()/2 - jugador->rect().width()/2,
-                    view->height() - jugador->rect().height());
+    jugador->setPos(view->width() / 2 - jugador->pixmap().width() / 2,
+                    view->height() - jugador->pixmap().height() - 10);
 
     // Agregar a la escena
     scene->addItem(jugador);
@@ -216,20 +223,25 @@ void MainWindow::iniciarNivel2()
     ocultarMenu();
     nivelActual = 2;
 
-    jugador =  new Jugador();
-    jugador->setRect(0, -50, 60, 100);
-    jugador->setBrush(Qt::green);
+    jugador = new Jugador();
+    jugador->setPixmap(QPixmap(":/imagenes/jugador_idle.png").scaled(60, 100));
     jugador->setFlag(QGraphicsItem::ItemIsFocusable);
     jugador->setFocus();
-    jugador->setPos(view->width()/2 - jugador->rect().width()/2,
-                    view->height() - jugador->rect().height());
+    jugador->setPos(view->width()/2 - jugador->pixmap().width()/2,
+                    view->height() - jugador->pixmap().height());
 
-
+    scene->addItem(jugador);
+    scene->addItem(jugador->textoTiempo);
 }
 
 void MainWindow::iniciarNivel3()
 {
    // Implementar Tercer Nivel
+    limpiarNivel();
+    ocultarMenu();
+    nivelActual = 3;
+
+    QMessageBox::information(this, "Nivel 3", "¡Aquí irá el último nivel!");
 }
 
 void MainWindow::siguienteNivel()
