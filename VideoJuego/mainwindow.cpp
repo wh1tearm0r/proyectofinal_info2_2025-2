@@ -159,7 +159,7 @@ void MainWindow::limpiarNivel()
     jugador = nullptr;
 
     // Restaurar fondo al limpiar
-    QPixmap fondo(":/imagenes/fondo.png");
+    QPixmap fondo(":/imagenes/Texxturas/CampoDeBatalla.png");
     scene->setBackgroundBrush(fondo.scaled(800, 600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 }
 
@@ -194,7 +194,7 @@ void MainWindow::iniciarNivel1()
 
     // Crear jugador
     jugador = new Jugador();
-    jugador->setPixmap(QPixmap(":/imagenes/jugador_idle.png").scaled(60, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    jugador->setPixmap(QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(60, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     jugador->setFlag(QGraphicsItem::ItemIsFocusable);
     jugador->setFocus();
 
@@ -224,7 +224,7 @@ void MainWindow::iniciarNivel2()
     nivelActual = 2;
 
     jugador = new Jugador();
-    jugador->setPixmap(QPixmap(":/imagenes/jugador_idle.png").scaled(60, 100));
+    jugador->setPixmap(QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(60, 100));
     jugador->setFlag(QGraphicsItem::ItemIsFocusable);
     jugador->setFocus();
     jugador->setPos(view->width()/2 - jugador->pixmap().width()/2,

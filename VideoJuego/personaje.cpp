@@ -1,7 +1,6 @@
 ﻿#include "Personaje.h"
 
-Personaje::Personaje(QGraphicsItem *parent)
-    : QGraphicsRectItem(parent), vida(100), velocidad(20),
+Personaje::Personaje(QGraphicsItem *parent) : QGraphicsPixmapItem(parent), vida(100), velocidad(20),
     limiteSuperior(0), limiteInferior(600),
     limiteIzquierdo(100), limiteDerecho(700) {
 }

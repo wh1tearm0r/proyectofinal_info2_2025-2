@@ -11,10 +11,10 @@ Jugador::Jugador(QGraphicsItem *parent)
     : Personaje(parent),
     frameActual(0)
 {
-    spriteQuieto = QPixmap(":/imagenes/jugador_idle.png").scaled(60, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    spriteQuieto = QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(60, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     setPixmap(spriteQuieto);
 
-    QPixmap spriteSheet(":/imagenes/jugador_correr.png");
+    QPixmap spriteSheet(":/imagenes/Texxturas/spritescorriendo.png");
     int anchoFrame = 60;
     int altoFrame = 100;
     for (int i = 0; i < 4; i++) {
