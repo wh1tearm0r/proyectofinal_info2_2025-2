@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/imagenes">
+        <file>Texxturas/spritespersonajeprincipal.png</file>
+    </qresource>
+</RCC>

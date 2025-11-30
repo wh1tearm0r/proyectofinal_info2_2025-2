@@ -1,45 +1,40 @@
 ﻿#include "Bala.h"
-#include <QBrush>
+#include <QTimer>
+#include <QGraphicsScene>
 #include <stdlib.h>
 
-Bala::Bala(QGraphicsItem *parent) : Obstaculo(parent) {
-
+Bala::Bala(QGraphicsItem *parent) : Obstaculo(parent)
+{
     if (juegoPausado) return;
 
-    // Configurar forma de la bala
-    setRect(0, 0, 20, 10);
+    QPixmap spriteBala(":/imagenes/bala.png");
 
-    // Dirección aleatoria (izquierda o derecha)
+    setPixmap(spriteBala.scaled(25, 10, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
     direccion = (rand() % 2 == 0) ? 1 : -1;
     int rand_y = rand() % 550;
 
-    // Posición y color según dirección
     if (direccion == 1) {
         setPos(0, rand_y);
-        setBrush(QBrush(Qt::red));
     } else {
         setPos(780, rand_y);
-        setBrush(QBrush(Qt::darkRed));
+        setTransform(QTransform().scale(-1, 1));
     }
 
-    // Configurar temporizador para movimiento
-    timer = new QTimer(this);
+    QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(mover()));
     timer->start(30);
 }
 
 void Bala::mover() {
-
     if (juegoPausado) return;
 
-    // Verificar colisiones
     manejarColision();
 
-    // Movimiento horizontal
     setPos(x() + direccion * 10, y());
 
-    // Eliminar bala si sale de los límites
-    if (x() < -rect().width() || x() > 800) {
+    // Eliminar si sale de la pantalla
+    if (x() < -pixmap().width() || x() > 800) {
         if (scene()) {
             scene()->removeItem(this);
         }

@@ -13,8 +13,9 @@ void Personaje::establecerPosicion(qreal x, qreal y) {
 }
 
 bool Personaje::validarMovimiento(qreal nuevoX, qreal nuevoY) {
+    // Limita al personaje dentro del área visible
     return (nuevoX >= limiteIzquierdo &&
-            nuevoX + rect().width() <= limiteDerecho &&
+            nuevoX + pixmap().width() <= limiteDerecho &&
             nuevoY >= limiteSuperior &&
-            nuevoY + rect().height() <= limiteInferior);
+            nuevoY + pixmap().height() <= limiteInferior);
 }

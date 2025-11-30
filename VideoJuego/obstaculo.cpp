@@ -3,7 +3,6 @@
 #include <typeinfo>
 #include <QMessageBox>
 #include <QApplication>
-#include <QProcess>
 #include <QTimer>
 #include <QGraphicsScene>
 #include <QDebug>
@@ -16,9 +15,9 @@ void Obstaculo::pausarJuego(bool estado) {
     juegoPausado = estado;
 }
 
-Obstaculo::Obstaculo(QGraphicsItem *parent) : QGraphicsRectItem(parent) {
-    // Constructor base - las subclases definirán su forma y posición
-    direccion = 0;
+Obstaculo::Obstaculo(QGraphicsItem *parent) : QGraphicsPixmapItem(parent),
+    direccion(0)
+{
 }
 
 void Obstaculo::manejarColision() {
@@ -34,8 +33,8 @@ void Obstaculo::manejarColision() {
 
             QMessageBox msgBox;
             msgBox.setWindowTitle("Game Over");
-            msgBox.setText("Prueba a esquivar las balas...");
-            msgBox.setInformativeText("¿Qué vas a hacer?");
+            msgBox.setText("Has sido alcanzado por una bala.");
+            msgBox.setInformativeText("¿Qué deseas hacer?");
             msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Close);
             msgBox.setDefaultButton(QMessageBox::Retry);
 
@@ -45,16 +44,13 @@ void Obstaculo::manejarColision() {
                 // Reiniciar escena
                 QList<QGraphicsItem*> elementos = escenaActual->items();
 
-                // Eliminar todos los elementos de la escena
                 for (auto item : elementos) {
                     escenaActual->removeItem(item);
                     delete item;
                 }
 
-                // Crear un nuevo jugador en la misma escena
+                // Crear nuevo jugador
                 Jugador *nuevoJugador = new Jugador();
-                nuevoJugador->setRect(0, 0, 60, 100);
-                nuevoJugador->setBrush(QBrush(Qt::blue));
                 escenaActual->addItem(nuevoJugador);
                 escenaActual->addItem(nuevoJugador->textoTiempo);
 
@@ -67,7 +63,6 @@ void Obstaculo::manejarColision() {
                 timer->start(500);
 
                 Obstaculo::pausarJuego(false);
-
             } else {
                 qApp->exit(0);
             }
