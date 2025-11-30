@@ -13,6 +13,8 @@ class Jugador : public Personaje {
 public:
     explicit Jugador(QGraphicsItem *parent = nullptr);
 
+    void keyPressEvent(QKeyEvent *event) override;
+
     // Implementación de los métodos abstractos
     void mover(int dx, int dy) override;
     void actualizarEstado() override;

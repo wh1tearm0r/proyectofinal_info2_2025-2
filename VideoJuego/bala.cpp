@@ -7,7 +7,7 @@ Bala::Bala(QGraphicsItem *parent) : Obstaculo(parent)
 {
     if (juegoPausado) return;
 
-    QPixmap spriteBala(":/imagenes/bala.png");
+    QPixmap spriteBala(":/imagenes/Texxturas/bala.png");
 
     setPixmap(spriteBala.scaled(25, 10, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 

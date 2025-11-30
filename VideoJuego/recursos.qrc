@@ -1,5 +1,10 @@
 <RCC>
     <qresource prefix="/imagenes">
         <file>Texxturas/spritespersonajeprincipal.png</file>
+        <file>Texxturas/bala.png</file>
+        <file>Texxturas/Cuarto.png</file>
+        <file>Texxturas/CampoDeBatalla.png</file>
+        <file>Texxturas/SpriteQuieto.png</file>
+        <file>Texxturas/spritescorriendo.png</file>
     </qresource>
 </RCC>
