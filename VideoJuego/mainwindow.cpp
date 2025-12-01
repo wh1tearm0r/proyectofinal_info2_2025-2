@@ -224,6 +224,7 @@ void MainWindow::iniciarNivel2()
     nivelActual = 2;
 
     jugador = new Jugador();
+    jugador->setNivel(2);
     jugador->setPixmap(QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(60, 100));
     jugador->setFlag(QGraphicsItem::ItemIsFocusable);
     jugador->setFocus();
@@ -232,6 +233,14 @@ void MainWindow::iniciarNivel2()
 
     scene->addItem(jugador);
     scene->addItem(jugador->textoTiempo);
+
+    // Configurar timer para nivel 2 (puedes ajustar la velocidad)
+    if(!timer) {
+        timer = new QTimer(this);
+    }
+    connect(timer, SIGNAL(timeout()), jugador, SLOT(aparecer()));
+    timer->start(400);  // Aparecen personas cada 400ms (un poco más rápido)
+
 }
 
 void MainWindow::iniciarNivel3()
