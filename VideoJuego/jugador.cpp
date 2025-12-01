@@ -1,5 +1,6 @@
 ﻿#include "Jugador.h"
 #include "Bala.h"
+#include "personas.h"
 #include "Obstaculo.h"
 #include <QMessageBox>
 #include <QGraphicsScene>
@@ -9,7 +10,8 @@
 
 Jugador::Jugador(QGraphicsItem *parent)
     : Personaje(parent),
-    frameActual(0)
+    frameActual(0),
+    nivelActual(1)  // Nivel por defecto
 {
     spriteQuieto = QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(60, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     setPixmap(spriteQuieto);
@@ -33,6 +35,10 @@ Jugador::Jugador(QGraphicsItem *parent)
     textoTiempo->setDefaultTextColor(Qt::white);
     textoTiempo->setFont(QFont("Arial", 16, QFont::Bold));
     textoTiempo->setPos(10, 10);
+}
+
+void Jugador::setNivel(int nivel) {
+    nivelActual = nivel;
 }
 
 void Jugador::mover(int dx, int dy) {
@@ -94,6 +100,32 @@ void Jugador::keyPressEvent(QKeyEvent *event) {
 }
 
 void Jugador::aparecer() {
-    Bala *bala = new Bala();
-    scene()->addItem(bala);
+    // Crear obstáculos según el nivel actual
+    switch(nivelActual) {
+    case 1:
+        // Nivel 1: Solo balas
+        {
+            Bala *bala = new Bala();
+            scene()->addItem(bala);
+        }
+        break;
+
+    case 2:
+        // Nivel 2: Solo personas
+        {
+            personas *persona = new personas();
+            scene()->addItem(persona);
+        }
+        break;
+
+    //case 3:
+
+    default:
+        // Nivel por defecto: balas
+        {
+            Bala *bala = new Bala();
+            scene()->addItem(bala);
+        }
+        break;
+    }
 }

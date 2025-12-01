@@ -21,6 +21,8 @@ public:
 
     // Control del tiempo del nivel
     QGraphicsTextItem *textoTiempo = nullptr;
+    void setNivel(int nivel);
+    int getNivel() const { return nivelActual; }
 
 public slots:
     void aparecer();
@@ -37,6 +39,7 @@ private:
     QTimer *temporizador;
     QElapsedTimer reloj;
     const int tiempoMaximo = 20000; // 20 segundos
+    int nivelActual;
 
     void actualizarSpriteCorrer();
 };
