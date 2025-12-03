@@ -146,6 +146,11 @@ void MainWindow::ocultarMenu()
     }
 }
 
+void MainWindow::establecerFondo(const QString &rutaImagen){
+    QPixmap fondo(rutaImagen);
+    scene->setBackgroundBrush(fondo.scaled(800, 600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+}
+
 void MainWindow::limpiarNivel()
 {
     // Detener timer si existe
@@ -158,9 +163,6 @@ void MainWindow::limpiarNivel()
     scene->clear();
     jugador = nullptr;
 
-    // Restaurar fondo al limpiar
-    QPixmap fondo(":/imagenes/Texxturas/CampoDeBatalla.png");
-    scene->setBackgroundBrush(fondo.scaled(800, 600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 }
 
 void MainWindow::cargarNivel(int nivel)
@@ -191,6 +193,8 @@ void MainWindow::iniciarNivel1()
     limpiarNivel();
     ocultarMenu();
     nivelActual = 1;
+
+    establecerFondo(":/imagenes/Texxturas/CampoDeBatalla.png");
 
     // Crear jugador
     jugador = new Jugador();
@@ -223,6 +227,8 @@ void MainWindow::iniciarNivel2()
     ocultarMenu();
     nivelActual = 2;
 
+    //Establecer fondo para el nivel
+
     jugador = new Jugador();
     jugador->setNivel(2);
     jugador->setPixmap(QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(60, 100));
@@ -250,7 +256,17 @@ void MainWindow::iniciarNivel3()
     ocultarMenu();
     nivelActual = 3;
 
-    QMessageBox::information(this, "Nivel 3", "¡Aquí irá el último nivel!");
+    //Establecer fondo para el nivel
+
+    //Combate por turnos, un nivel totalmente distinto a los otros dos
+    jugador = new Jugador();
+    jugador->setNivel(3);
+    jugador->setPixmap(QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(60, 100));
+    jugador->setFlag(QGraphicsItem::ItemIsFocusable);
+    jugador->setFocus();
+    jugador->setPos(view->width()/2 - jugador->pixmap().width()/2,
+                    view->height() - jugador->pixmap().height());
+    scene->addItem(jugador);
 }
 
 void MainWindow::siguienteNivel()

@@ -50,6 +50,7 @@ private:
     void configurarMenu();
     void mostrarMenu();
     void ocultarMenu();
+    void establecerFondo(const QString &rutaImagen);
     void limpiarNivel();
     void cargarNivel(int nivel);
 };
