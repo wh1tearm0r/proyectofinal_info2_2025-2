@@ -10,7 +10,10 @@ CONFIG += c++17
 
 SOURCES += \
     bala.cpp \
+    combate.cpp \
+    enemigo.cpp \
     jugador.cpp \
+    jugadorcombate.cpp \
     main.cpp \
     mainwindow.cpp \
     obstaculo.cpp \
@@ -19,7 +22,10 @@ SOURCES += \
 
 HEADERS += \
     bala.h \
+    combate.h \
+    enemigo.h \
     jugador.h \
+    jugadorcombate.h \
     mainwindow.h \
     obstaculo.h \
     personaje.h \

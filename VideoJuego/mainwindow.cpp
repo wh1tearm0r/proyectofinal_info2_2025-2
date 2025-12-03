@@ -1,6 +1,7 @@
 ﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "Jugador.h"
+#include "combate.h"
 #include <QGraphicsPixmapItem>
 #include <QMessageBox>
 #include <QPushButton>
@@ -251,22 +252,35 @@ void MainWindow::iniciarNivel2()
 
 void MainWindow::iniciarNivel3()
 {
-   // Implementar Tercer Nivel
+    // Implementar Tercer Nivel
     limpiarNivel();
     ocultarMenu();
     nivelActual = 3;
 
-    //Establecer fondo para el nivel
+    // Establecer fondo para el nivel de combate
+    establecerFondo(":/imagenes/fondo_combate.png");
 
-    //Combate por turnos, un nivel totalmente distinto a los otros dos
-    jugador = new Jugador();
-    jugador->setNivel(3);
-    jugador->setPixmap(QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(60, 100));
-    jugador->setFlag(QGraphicsItem::ItemIsFocusable);
-    jugador->setFocus();
-    jugador->setPos(view->width()/2 - jugador->pixmap().width()/2,
-                    view->height() - jugador->pixmap().height());
-    scene->addItem(jugador);
+    // Crear y mostrar ventana de combate
+    Combate *combate = new Combate(this);
+    combate->setGeometry(0, 0, 800, 600);
+    combate->show();
+    combate->raise(); // Asegurarse de que esté al frente
+
+    // Conectar señal de combate terminado
+    connect(combate, &Combate::combateTerminado, this,
+            [this, combate](bool victoria) {
+                if (victoria) {
+                    QMessageBox::information(this, "¡Victoria!",
+                                             "¡Has derrotado al Señor Oscuro!\n¡Has completado todos los niveles!");
+                    volverAlMenu();
+                } else {
+                    gameOver();
+                }
+                combate->deleteLater();
+            });
+
+    // Iniciar el combate (nivel 3 = jefe final)
+    combate->iniciarCombate();
 }
 
 void MainWindow::siguienteNivel()
