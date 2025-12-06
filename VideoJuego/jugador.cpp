@@ -73,10 +73,8 @@ void Jugador::actualizarTiempo() {
         temporizador->stop();
 
         QMessageBox msgBox;
-        msgBox.setWindowTitle("Nivel completado");
-        msgBox.setStandardButtons(QMessageBox::Close);
-        msgBox.setDefaultButton(QMessageBox::Close);
-        qApp->exit(0);
+        msgBox.setWindowTitle("Nivel completado\nSaliendo...");
+        emit nivelCompletado();
     }
 }
 

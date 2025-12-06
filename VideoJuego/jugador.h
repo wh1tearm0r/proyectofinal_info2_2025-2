@@ -28,6 +28,9 @@ public slots:
     void aparecer();
     void actualizarTiempo();
 
+signals:
+    void nivelCompletado();
+
 private:
     // 🔹 Animaciones
     QVector<QPixmap> framesCorrer;

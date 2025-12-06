@@ -266,6 +266,8 @@ void MainWindow::iniciarNivel1()
         scene->addItem(jugador->textoTiempo);
     }
 
+    connect(jugador, &Jugador::nivelCompletado, this, &MainWindow::siguienteNivel);
+
     // Configurar timer
     if(!timer) {
         timer = new QTimer(this);
@@ -303,6 +305,8 @@ void MainWindow::iniciarNivel2()
     if(jugador->textoTiempo) {
         scene->addItem(jugador->textoTiempo);
     }
+
+    connect(jugador, &Jugador::nivelCompletado, this, &MainWindow::siguienteNivel);
 
     // Configurar timer
     if(!timer) {
