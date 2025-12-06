@@ -269,13 +269,14 @@ void MainWindow::iniciarNivel1()
     connect(jugador, &Jugador::nivelCompletado, this, &MainWindow::siguienteNivel);
 
     // Configurar timer
-    if(!timer) {
-        timer = new QTimer(this);
-    } else {
-        timer->disconnect();
+    if (timer) {
+        timer->stop();
+        timer->deleteLater();
     }
+    timer = new QTimer(this);
     connect(timer, &QTimer::timeout, jugador, &Jugador::aparecer);
-    timer->start(450);
+    timer->start((nivelActual == 1) ? 450 : 400);
+
 }
 
 void MainWindow::iniciarNivel2()
@@ -297,6 +298,10 @@ void MainWindow::iniciarNivel2()
     jugador->setFlag(QGraphicsItem::ItemIsFocusable);
     jugador->setFocus();
 
+    // Ajustar límites laterales para el área estrecha
+    jugador->limiteIzquierdo = MARGEN_LATERAL_NIVEL2;
+    jugador->limiteDerecho = MARGEN_LATERAL_NIVEL2 + ANCHO_JUEGO_NIVEL2 - jugador->pixmap().width();
+
     // Posicionar en el centro del área estrecha
     jugador->setPos(MARGEN_LATERAL_NIVEL2 + (ANCHO_JUEGO_NIVEL2 / 2) - (jugador->pixmap().width() / 2),
                     view->height() - jugador->pixmap().height());
@@ -309,13 +314,13 @@ void MainWindow::iniciarNivel2()
     connect(jugador, &Jugador::nivelCompletado, this, &MainWindow::siguienteNivel);
 
     // Configurar timer
-    if(!timer) {
-        timer = new QTimer(this);
-    } else {
-        timer->disconnect();
+    if (timer) {
+        timer->stop();
+        timer->deleteLater();
     }
+    timer = new QTimer(this);
     connect(timer, &QTimer::timeout, jugador, &Jugador::aparecer);
-    timer->start(400);
+    timer->start((nivelActual == 2) ? 450 : 400);
 }
 
 void MainWindow::iniciarNivel3()

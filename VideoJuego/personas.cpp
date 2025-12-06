@@ -27,7 +27,7 @@ personas::personas()
 
     setPixmap(spritePersona);
 
-    // 🎯 IMPORTANTE: Posición aleatoria SOLO dentro del área estrecha (150 a 650)
+    // IMPORTANTE: Posición aleatoria SOLO dentro del área estrecha (150 a 650)
     const int MARGEN_LATERAL = 150;
     const int ANCHO_JUEGO = 500;
 
@@ -117,7 +117,7 @@ void personas::mover(){
     break;
     }
 
-    // 🎯 CRÍTICO: Asegurar que NO salga del área estrecha (150 a 650)
+    // CRÍTICO: Asegurar que NO salga del área estrecha (150 a 650)
     const int MARGEN_LATERAL = 150;
     const int ANCHO_JUEGO = 500;
     const int LIMITE_IZQUIERDO = MARGEN_LATERAL;
