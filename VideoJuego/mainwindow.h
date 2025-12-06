@@ -4,22 +4,37 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QGraphicsRectItem>
+#include <QGraphicsLineItem>
 #include <QTimer>
 
 QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
-}
+namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class Jugador;
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+    void configurarEscena();
+    void configurarMenu();
+    void mostrarMenu();
+    void ocultarMenu();
+    void establecerFondo(const QString &rutaImagen);
+    void limpiarNivel();
+    void cargarNivel(int nivel);
+
+    // Funciones para bordes laterales (nivel 2)
+    void crearBordesLateralesNivel2();
+    void eliminarBordesLaterales();
+    int getAnchoJuegoNivel2() const { return ANCHO_JUEGO_NIVEL2; }
+    int getMargenLateralNivel2() const { return MARGEN_LATERAL_NIVEL2; }
 
 private slots:
     void iniciarNivel1();
@@ -31,28 +46,23 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-
-    // Componentes del juego
     QGraphicsScene *scene;
     QGraphicsView *view;
     Jugador *jugador;
     QTimer *timer;
-
-    // Control de niveles
     int nivelActual;
     bool enJuego;
-
-    // Widgets del menú
     QWidget *menuWidget;
 
-    // Métodos auxiliares
-    void configurarEscena();
-    void configurarMenu();
-    void mostrarMenu();
-    void ocultarMenu();
-    void establecerFondo(const QString &rutaImagen);
-    void limpiarNivel();
-    void cargarNivel(int nivel);
+    // 🔹 Atributos para el escenario estrecho (solo nivel 2)
+    QGraphicsRectItem* bordeLateral1;
+    QGraphicsRectItem* bordeLateral2;
+    QGraphicsLineItem* lineaLimiteIzq;
+    QGraphicsLineItem* lineaLimiteDer;
+
+    // 🔹 Constantes para el área de juego estrecha (nivel 2)
+    const int ANCHO_JUEGO_NIVEL2 = 500;      // Área de juego estrecha
+    const int MARGEN_LATERAL_NIVEL2 = 150;   // Margen a cada lado
 };
 
 #endif // MAINWINDOW_H

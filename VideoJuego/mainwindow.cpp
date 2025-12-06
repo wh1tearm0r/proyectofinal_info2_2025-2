@@ -19,13 +19,13 @@ MainWindow::MainWindow(QWidget *parent)
     , nivelActual(0)
     , enJuego(false)
     , menuWidget(nullptr)
+    , bordeLateral1(nullptr)
+    , bordeLateral2(nullptr)
+    , lineaLimiteIzq(nullptr)
+    , lineaLimiteDer(nullptr)
 {
     ui->setupUi(this);
-
-    // Configurar la escena principal
     configurarEscena();
-
-    // Configurar y mostrar el menú
     configurarMenu();
     mostrarMenu();
 }
@@ -33,47 +33,45 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-    if(timer) delete timer;
-    if(scene) delete scene;
+    if(timer) {
+        timer->stop();
+        timer->disconnect();
+        delete timer;
+    }
+    if(scene) {
+        scene->clear();
+        delete scene;
+    }
 }
 
 void MainWindow::configurarEscena()
 {
-    // Crear escena
     scene = new QGraphicsScene(this);
     scene->setSceneRect(0, 0, 800, 600);
 
     QPixmap fondo(":/imagenes/fondo.png");
     scene->setBackgroundBrush(fondo.scaled(800, 600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
-    // Crear vista
     view = new QGraphicsView(scene, this);
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setFixedSize(800, 600);
 
-    // Establecer la vista como widget central
     setCentralWidget(view);
-
-    // Ajustar tamaño de la ventana
     setFixedSize(800, 600);
 }
 
 void MainWindow::configurarMenu()
 {
-    // Crear widget del menú
     menuWidget = new QWidget(view);
     menuWidget->setGeometry(250, 250, 300, 300);
     menuWidget->setStyleSheet("background-color: rgba(0, 0, 0, 180); border-radius: 10px;");
 
-    // Layout vertical
     QVBoxLayout *layout = new QVBoxLayout(menuWidget);
     layout->setSpacing(20);
     layout->setContentsMargins(30, 30, 30, 30);
-
     layout->addSpacing(20);
 
-    // Botón Nivel 1
     QPushButton *btnNivel1 = new QPushButton("Nivel 1");
     btnNivel1->setStyleSheet(
         "QPushButton {"
@@ -91,7 +89,6 @@ void MainWindow::configurarMenu()
     connect(btnNivel1, &QPushButton::clicked, this, &MainWindow::iniciarNivel1);
     layout->addWidget(btnNivel1);
 
-    // Botón Nivel 2
     QPushButton *btnNivel2 = new QPushButton("Nivel 2");
     btnNivel2->setStyleSheet(
         "QPushButton {"
@@ -109,7 +106,6 @@ void MainWindow::configurarMenu()
     connect(btnNivel2, &QPushButton::clicked, this, &MainWindow::iniciarNivel2);
     layout->addWidget(btnNivel2);
 
-    // Botón Nivel 3
     QPushButton *btnNivel3 = new QPushButton("Nivel 3");
     btnNivel3->setStyleSheet(
         "QPushButton {"
@@ -147,29 +143,85 @@ void MainWindow::ocultarMenu()
     }
 }
 
-void MainWindow::establecerFondo(const QString &rutaImagen){
+void MainWindow::establecerFondo(const QString &rutaImagen)
+{
     QPixmap fondo(rutaImagen);
     scene->setBackgroundBrush(fondo.scaled(800, 600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 }
 
+void MainWindow::crearBordesLateralesNivel2()
+{
+    bordeLateral1 = new QGraphicsRectItem(0, 0, MARGEN_LATERAL_NIVEL2, 600);
+    bordeLateral1->setBrush(QBrush(QColor(40, 40, 40, 200)));
+    bordeLateral1->setPen(QPen(Qt::black, 2));
+    bordeLateral1->setZValue(100);
+    scene->addItem(bordeLateral1);
+
+    bordeLateral2 = new QGraphicsRectItem(MARGEN_LATERAL_NIVEL2 + ANCHO_JUEGO_NIVEL2, 0, MARGEN_LATERAL_NIVEL2, 600);
+    bordeLateral2->setBrush(QBrush(QColor(40, 40, 40, 200)));
+    bordeLateral2->setPen(QPen(Qt::black, 2));
+    bordeLateral2->setZValue(100);
+    scene->addItem(bordeLateral2);
+
+    lineaLimiteIzq = new QGraphicsLineItem(MARGEN_LATERAL_NIVEL2, 0, MARGEN_LATERAL_NIVEL2, 600);
+    lineaLimiteIzq->setPen(QPen(Qt::yellow, 3));
+    lineaLimiteIzq->setZValue(101);
+    scene->addItem(lineaLimiteIzq);
+
+    lineaLimiteDer = new QGraphicsLineItem(MARGEN_LATERAL_NIVEL2 + ANCHO_JUEGO_NIVEL2, 0,
+                                           MARGEN_LATERAL_NIVEL2 + ANCHO_JUEGO_NIVEL2, 600);
+    lineaLimiteDer->setPen(QPen(Qt::yellow, 3));
+    lineaLimiteDer->setZValue(101);
+    scene->addItem(lineaLimiteDer);
+}
+
+void MainWindow::eliminarBordesLaterales()
+{
+    if(bordeLateral1) {
+        scene->removeItem(bordeLateral1);
+        delete bordeLateral1;
+        bordeLateral1 = nullptr;
+    }
+    if(bordeLateral2) {
+        scene->removeItem(bordeLateral2);
+        delete bordeLateral2;
+        bordeLateral2 = nullptr;
+    }
+    if(lineaLimiteIzq) {
+        scene->removeItem(lineaLimiteIzq);
+        delete lineaLimiteIzq;
+        lineaLimiteIzq = nullptr;
+    }
+    if(lineaLimiteDer) {
+        scene->removeItem(lineaLimiteDer);
+        delete lineaLimiteDer;
+        lineaLimiteDer = nullptr;
+    }
+}
+
 void MainWindow::limpiarNivel()
 {
-    // Detener timer si existe
+    // Detener y limpiar timer
     if(timer) {
         timer->stop();
-        disconnect(timer, nullptr, nullptr, nullptr);
+        timer->disconnect();
     }
 
-    // Limpiar la escena
-    scene->clear();
-    jugador = nullptr;
+    // Eliminar bordes laterales si existen
+    eliminarBordesLaterales();
 
+    // Limpiar todos los items de la escena
+    QList<QGraphicsItem*> items = scene->items();
+    for(auto item : items) {
+        scene->removeItem(item);
+        delete item;
+    }
+
+    jugador = nullptr;
 }
 
 void MainWindow::cargarNivel(int nivel)
 {
-    limpiarNivel();
-    ocultarMenu();
     nivelActual = nivel;
 
     switch(nivel) {
@@ -199,27 +251,29 @@ void MainWindow::iniciarNivel1()
 
     // Crear jugador
     jugador = new Jugador();
+    jugador->setNivel(1);
     jugador->setPixmap(QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(60, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     jugador->setFlag(QGraphicsItem::ItemIsFocusable);
     jugador->setFocus();
 
-    // Posicionar jugador
+    // Posicionar jugador en el centro
     jugador->setPos(view->width() / 2 - jugador->pixmap().width() / 2,
                     view->height() - jugador->pixmap().height() - 10);
 
     // Agregar a la escena
     scene->addItem(jugador);
-    scene->addItem(jugador->textoTiempo);
+    if(jugador->textoTiempo) {
+        scene->addItem(jugador->textoTiempo);
+    }
 
-    // Configurar timer (velocidad normal)
+    // Configurar timer
     if(!timer) {
         timer = new QTimer(this);
+    } else {
+        timer->disconnect();
     }
-    connect(timer, SIGNAL(timeout()), jugador, SLOT(aparecer()));
+    connect(timer, &QTimer::timeout, jugador, &Jugador::aparecer);
     timer->start(450);
-
-    // Conectar señal de nivel completado (deberías implementar esto en Jugador)
-    // connect(jugador, &Jugador::nivelCompletado, this, &MainWindow::siguienteNivel);
 }
 
 void MainWindow::iniciarNivel2()
@@ -228,45 +282,51 @@ void MainWindow::iniciarNivel2()
     ocultarMenu();
     nivelActual = 2;
 
-    //Establecer fondo para el nivel
+    // Establecer fondo para nivel 2
+    // establecerFondo(":/imagenes/Texxturas/CampoDeBatalla.png");
 
+    // Crear bordes laterales SOLO para nivel 2
+    crearBordesLateralesNivel2();
+
+    // Crear jugador
     jugador = new Jugador();
     jugador->setNivel(2);
     jugador->setPixmap(QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(60, 100));
     jugador->setFlag(QGraphicsItem::ItemIsFocusable);
     jugador->setFocus();
-    jugador->setPos(view->width()/2 - jugador->pixmap().width()/2,
+
+    // Posicionar en el centro del área estrecha
+    jugador->setPos(MARGEN_LATERAL_NIVEL2 + (ANCHO_JUEGO_NIVEL2 / 2) - (jugador->pixmap().width() / 2),
                     view->height() - jugador->pixmap().height());
 
     scene->addItem(jugador);
-    scene->addItem(jugador->textoTiempo);
+    if(jugador->textoTiempo) {
+        scene->addItem(jugador->textoTiempo);
+    }
 
-    // Configurar timer para nivel 2 (puedes ajustar la velocidad)
+    // Configurar timer
     if(!timer) {
         timer = new QTimer(this);
+    } else {
+        timer->disconnect();
     }
-    connect(timer, SIGNAL(timeout()), jugador, SLOT(aparecer()));
-    timer->start(400);  // Aparecen personas cada 400ms (un poco más rápido)
-
+    connect(timer, &QTimer::timeout, jugador, &Jugador::aparecer);
+    timer->start(400);
 }
 
 void MainWindow::iniciarNivel3()
 {
-    // Implementar Tercer Nivel
     limpiarNivel();
     ocultarMenu();
     nivelActual = 3;
 
-    // Establecer fondo para el nivel de combate
     establecerFondo(":/imagenes/fondo_combate.png");
 
-    // Crear y mostrar ventana de combate
     Combate *combate = new Combate(this);
     combate->setGeometry(0, 0, 800, 600);
     combate->show();
-    combate->raise(); // Asegurarse de que esté al frente
+    combate->raise();
 
-    // Conectar señal de combate terminado
     connect(combate, &Combate::combateTerminado, this,
             [this, combate](bool victoria) {
                 if (victoria) {
@@ -279,7 +339,6 @@ void MainWindow::iniciarNivel3()
                 combate->deleteLater();
             });
 
-    // Iniciar el combate (nivel 3 = jefe final)
     combate->iniciarCombate();
 }
 
@@ -306,7 +365,11 @@ void MainWindow::gameOver()
                                       QMessageBox::Yes | QMessageBox::No);
 
     if(respuesta == QMessageBox::Yes) {
-        cargarNivel(nivelActual); // Reiniciar el nivel actual
+        if(nivelActual > 0) {
+            cargarNivel(nivelActual);
+        } else {
+            volverAlMenu();
+        }
     } else {
         volverAlMenu();
     }
@@ -315,5 +378,6 @@ void MainWindow::gameOver()
 void MainWindow::volverAlMenu()
 {
     limpiarNivel();
+    nivelActual = 0;
     mostrarMenu();
 }
