@@ -1,19 +1,26 @@
 ﻿#ifndef OBSTACULO_H
 #define OBSTACULO_H
 
-#include <QGraphicsRectItem>
+#include <QGraphicsPixmapItem>
 #include <QObject>
+#include <QGraphicsScene>
 
-class Obstaculo:public QObject, public QGraphicsRectItem{
+class Obstaculo : public QObject, public QGraphicsPixmapItem {
     Q_OBJECT
+
 public:
-    Obstaculo();
-    static bool juegoPausado;
+    explicit Obstaculo(QGraphicsItem *parent = nullptr);
+    virtual ~Obstaculo() {}
+
     static void pausarJuego(bool estado);
+    static bool juegoPausado;
+
 public slots:
-    void mover();
-private:
-int direccion;
+    virtual void mover() = 0;
+
+protected:
+    int direccion;
+    void manejarColision();
 };
 
-#endif // ENEMIGO_H
+#endif // OBSTACULO_H

@@ -1,7 +1,6 @@
 ﻿#include "Personaje.h"
 
-Personaje::Personaje(QGraphicsItem *parent)
-    : QGraphicsRectItem(parent), vida(100), velocidad(20),
+Personaje::Personaje(QGraphicsItem *parent) : QGraphicsPixmapItem(parent), vida(100), velocidad(20),
     limiteSuperior(0), limiteInferior(600),
     limiteIzquierdo(100), limiteDerecho(700) {
 }
@@ -13,8 +12,9 @@ void Personaje::establecerPosicion(qreal x, qreal y) {
 }
 
 bool Personaje::validarMovimiento(qreal nuevoX, qreal nuevoY) {
+    // Limita al personaje dentro del área visible
     return (nuevoX >= limiteIzquierdo &&
-            nuevoX + rect().width() <= limiteDerecho &&
+            nuevoX + pixmap().width() <= limiteDerecho &&
             nuevoY >= limiteSuperior &&
-            nuevoY + rect().height() <= limiteInferior);
+            nuevoY + pixmap().height() <= limiteInferior);
 }

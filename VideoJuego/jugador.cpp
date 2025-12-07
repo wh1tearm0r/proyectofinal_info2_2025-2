@@ -1,44 +1,79 @@
-﻿#include <QMessageBox>
-#include "Jugador.h"
+﻿#include "Jugador.h"
 #include "Bala.h"
+#include "personas.h"
 #include "Obstaculo.h"
-#include <QDebug>
+#include <QMessageBox>
 #include <QGraphicsScene>
 #include <QApplication>
+#include <QKeyEvent>
+#include <QDebug>
 
-Jugador::Jugador() : Personaje() {
-    velocidad = 20; // Velocidad específica del jugador
-    vida = 100;
+Jugador::Jugador(QGraphicsItem *parent)
+    : Personaje(parent),
+    frameActual(0),
+    nivelActual(1)  // Nivel por defecto
+{
+    spriteQuieto = QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(60, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    setPixmap(spriteQuieto);
+
+    QPixmap spriteSheet(":/imagenes/Texxturas/spritescorriendo.png");
+    int anchoFrame = 60;
+    int altoFrame = 100;
+    for (int i = 0; i < 4; i++) {
+        framesCorrer.append(spriteSheet.copy(i * anchoFrame, 0, anchoFrame, altoFrame).scaled(60, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    }
+
+    timerAnimacion = new QTimer(this);
+    connect(timerAnimacion, &QTimer::timeout, this, &Jugador::actualizarSpriteCorrer);
 
     reloj.start();
     temporizador = new QTimer(this);
     connect(temporizador, SIGNAL(timeout()), this, SLOT(actualizarTiempo()));
     temporizador->start(100);
+
+    textoTiempo = new QGraphicsTextItem();
+    textoTiempo->setDefaultTextColor(Qt::white);
+    textoTiempo->setFont(QFont("Arial", 16, QFont::Bold));
+    textoTiempo->setPos(10, 10);
+}
+
+void Jugador::setNivel(int nivel) {
+    nivelActual = nivel;
 }
 
 void Jugador::mover(int dx, int dy) {
     qreal nuevoX = x() + dx;
     qreal nuevoY = y() + dy;
-
     if (validarMovimiento(nuevoX, nuevoY)) {
         setPos(nuevoX, nuevoY);
+        if (!timerAnimacion->isActive()) timerAnimacion->start(100);
     }
 }
 
 void Jugador::actualizarEstado() {
-    // Aquí puedes agregar lógica para actualizar el estado del jugador
-    // Por ejemplo: verificar colisiones, actualizar animaciones, etc.
+    timerAnimacion->stop();
+    setPixmap(spriteQuieto);
+}
+
+void Jugador::actualizarSpriteCorrer() {
+    frameActual = (frameActual + 1) % framesCorrer.size();
+    setPixmap(framesCorrer[frameActual]);
 }
 
 void Jugador::actualizarTiempo() {
     if (Obstaculo::juegoPausado) return;
 
-    if (reloj.elapsed() >= tiempoRestante) {
+    int tiempoTranscurrido = reloj.elapsed();
+    int tiempoRestante = (tiempoMaximo - tiempoTranscurrido) / 1000;
+
+    textoTiempo->setPlainText(QString("Tiempo restante: %1 s").arg(tiempoRestante));
+
+    if (tiempoTranscurrido >= tiempoMaximo) {
         Obstaculo::pausarJuego(true);
         temporizador->stop();
 
         QMessageBox msgBox;
-        msgBox.setWindowTitle("¡Nivel completado!");
+        msgBox.setWindowTitle("Nivel completado");
         msgBox.setStandardButtons(QMessageBox::Close);
         msgBox.setDefaultButton(QMessageBox::Close);
         qApp->exit(0);
@@ -62,11 +97,35 @@ void Jugador::keyPressEvent(QKeyEvent *event) {
     default:
         break;
     }
-
-    actualizarEstado();
 }
 
 void Jugador::aparecer() {
-    Obstaculo *bala = new Obstaculo();
-    scene()->addItem(bala);
+    // Crear obstáculos según el nivel actual
+    switch(nivelActual) {
+    case 1:
+        // Nivel 1: Solo balas
+        {
+            Bala *bala = new Bala();
+            scene()->addItem(bala);
+        }
+        break;
+
+    case 2:
+        // Nivel 2: Solo personas
+        {
+            personas *persona = new personas();
+            scene()->addItem(persona);
+        }
+        break;
+
+    //case 3:
+
+    default:
+        // Nivel por defecto: balas
+        {
+            Bala *bala = new Bala();
+            scene()->addItem(bala);
+        }
+        break;
+    }
 }

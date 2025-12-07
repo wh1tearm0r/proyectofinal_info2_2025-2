@@ -1,15 +1,21 @@
 ﻿#ifndef BALA_H
 #define BALA_H
 
-#include <QGraphicsRectItem>
-#include <QObject>
+#include "Obstaculo.h"
+#include <QTimer>
 
-class Bala: public QObject, public QGraphicsRectItem{
+class Bala : public Obstaculo {
     Q_OBJECT
+
 public:
-    Bala();
+    Bala(QGraphicsItem *parent = nullptr);
+    ~Bala() {}
+
 public slots:
-    void mover();
+    void mover() override;
+
+private:
+    QTimer *timer;
 };
 
 #endif // BALA_H

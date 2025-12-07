@@ -2,30 +2,46 @@
 #define JUGADOR_H
 
 #include "Personaje.h"
-#include <QKeyEvent>
 #include <QTimer>
 #include <QElapsedTimer>
+#include <QGraphicsTextItem>
+#include <QPixmap>
+#include <QVector>
 
 class Jugador : public Personaje {
     Q_OBJECT
 public:
-    Jugador();
+    explicit Jugador(QGraphicsItem *parent = nullptr);
 
-    // Implementación de métodos abstractos
+    void keyPressEvent(QKeyEvent *event) override;
+
+    // Implementación de los métodos abstractos
     void mover(int dx, int dy) override;
     void actualizarEstado() override;
 
-    // Métodos específicos de Jugador
-    void keyPressEvent(QKeyEvent *event);
+    // Control del tiempo del nivel
+    QGraphicsTextItem *textoTiempo = nullptr;
+    void setNivel(int nivel);
+    int getNivel() const { return nivelActual; }
 
 public slots:
     void aparecer();
     void actualizarTiempo();
 
 private:
+    // 🔹 Animaciones
+    QVector<QPixmap> framesCorrer;
+    QPixmap spriteQuieto;
+    int frameActual;
+    QTimer *timerAnimacion;
+
+    // 🔹 Control del tiempo
     QTimer *temporizador;
     QElapsedTimer reloj;
-    const int tiempoRestante = 20000;
+    const int tiempoMaximo = 20000; // 20 segundos
+    int nivelActual;
+
+    void actualizarSpriteCorrer();
 };
 
 #endif // JUGADOR_H

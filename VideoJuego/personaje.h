@@ -1,14 +1,15 @@
 ﻿#ifndef PERSONAJE_H
 #define PERSONAJE_H
 
-#include <QGraphicsRectItem>
+#include <QGraphicsPixmapItem>
 #include <QKeyEvent>
 #include <QObject>
+#include <QPixmap>
 
-class Personaje : public QObject, public QGraphicsRectItem {
+class Personaje : public QObject, public QGraphicsPixmapItem {
     Q_OBJECT
 public:
-    Personaje(QGraphicsItem *parent = nullptr);
+    explicit Personaje(QGraphicsItem *parent = nullptr);
     virtual ~Personaje() = default;
 
     // Métodos virtuales puros (abstractos)
@@ -33,6 +34,8 @@ protected:
     qreal limiteInferior;
     qreal limiteIzquierdo;
     qreal limiteDerecho;
+
+    QPixmap spriteActual;
 };
 
 #endif // PERSONAJE_H

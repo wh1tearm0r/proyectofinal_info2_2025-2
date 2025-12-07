@@ -1,37 +1,43 @@
 ﻿#include "Bala.h"
-#include "Obstaculo.h"
 #include <QTimer>
-#include <QObject>
 #include <QGraphicsScene>
-#include <QDebug>
+#include <stdlib.h>
 
-Bala::Bala() {
-    setRect(0,0,10,50);
-    QTimer * timer=new QTimer();
-    connect(timer, SIGNAL(timeout()),this,SLOT(mover()));
-    timer->start(50);
+Bala::Bala(QGraphicsItem *parent) : Obstaculo(parent)
+{
+    if (juegoPausado) return;
+
+    QPixmap spriteBala(":/imagenes/Texxturas/bala.png");
+
+    setPixmap(spriteBala.scaled(25, 10, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    direccion = (rand() % 2 == 0) ? 1 : -1;
+    int rand_y = rand() % 550;
+
+    if (direccion == 1) {
+        setPos(0, rand_y);
+    } else {
+        setPos(780, rand_y);
+        setTransform(QTransform().scale(-1, 1));
+    }
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(mover()));
+    timer->start(30);
 }
 
-void Bala::mover(){
-    QList <QGraphicsItem *>colliding_items=collidingItems();
-    for (int i=0, n=colliding_items.size(); i<n;i++){
-        if (typeid(*(colliding_items[i]))==typeid(Obstaculo)){
-            //remover ambos
-            scene()->removeItem(colliding_items[i]);
+void Bala::mover() {
+    if (juegoPausado) return;
+
+    manejarColision();
+
+    setPos(x() + direccion * 10, y());
+
+    // Eliminar si sale de la pantalla
+    if (x() < -pixmap().width() || x() > 800) {
+        if (scene()) {
             scene()->removeItem(this);
-            //Borrar ambos
-            delete colliding_items[i];
-            delete this;
-            return;
         }
+        deleteLater();
     }
-
-    setPos(x(),y()-10);
-    if (pos().y()+rect().height()<0){
-        scene()->removeItem(this);
-        delete this;
-        qDebug()<<"Bala eliminada";
-
-    }
-
 }

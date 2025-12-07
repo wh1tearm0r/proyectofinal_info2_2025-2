@@ -10,18 +10,26 @@ CONFIG += c++17
 
 SOURCES += \
     bala.cpp \
+    combate.cpp \
+    enemigo.cpp \
     jugador.cpp \
+    jugadorcombate.cpp \
     main.cpp \
     mainwindow.cpp \
     obstaculo.cpp \
-    personaje.cpp
+    personaje.cpp \
+    personas.cpp
 
 HEADERS += \
     bala.h \
+    combate.h \
+    enemigo.h \
     jugador.h \
+    jugadorcombate.h \
     mainwindow.h \
     obstaculo.h \
-    personaje.h
+    personaje.h \
+    personas.h
 
 FORMS += \
     mainwindow.ui
@@ -30,3 +38,9 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    Texxturas/spritespersonajeprincipal.png
+
+RESOURCES += \
+    recursos.qrc
