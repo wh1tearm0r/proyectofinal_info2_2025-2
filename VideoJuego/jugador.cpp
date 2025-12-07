@@ -10,21 +10,37 @@
 
 Jugador::Jugador(QGraphicsItem *parent)
     : Personaje(parent),
+    direccionActual(0),
     frameActual(0),
-    nivelActual(1)  // Nivel por defecto
+    nivelActual(1)
 {
-    spriteQuieto = QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(60, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    const int anchoEscalado = 100;
+    const int altoEscalado = 140;
+
+    spriteQuieto = QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(anchoEscalado, altoEscalado, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     setPixmap(spriteQuieto);
 
     QPixmap spriteSheet(":/imagenes/Texxturas/spritescorriendo.png");
-    int anchoFrame = 60;
-    int altoFrame = 100;
-    for (int i = 0; i < 4; i++) {
-        framesCorrer.append(spriteSheet.copy(i * anchoFrame, 0, anchoFrame, altoFrame).scaled(60, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    int columnas = 8;
+    int filas = 4;
+    int anchoFrame = spriteSheet.width() / columnas;
+    int altoFrame = spriteSheet.height() / filas;
+
+    for (int fila = 0; fila < filas; fila++) {
+        QVector<QPixmap> animFila;
+        for (int col = 0; col < columnas; col++) {
+            QPixmap frame = spriteSheet.copy(col * anchoFrame, fila * altoFrame, anchoFrame, altoFrame)
+            .scaled(anchoEscalado, altoEscalado, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            animFila.append(frame);
+        }
+        animaciones.append(animFila);
     }
+
+    setPixmap(animaciones[direccionActual][0]);
 
     timerAnimacion = new QTimer(this);
     connect(timerAnimacion, &QTimer::timeout, this, &Jugador::actualizarSpriteCorrer);
+    timerAnimacion->start(100);
 
     reloj.start();
     temporizador = new QTimer(this);
@@ -46,7 +62,6 @@ void Jugador::mover(int dx, int dy) {
     qreal nuevoY = y() + dy;
     if (validarMovimiento(nuevoX, nuevoY)) {
         setPos(nuevoX, nuevoY);
-        if (!timerAnimacion->isActive()) timerAnimacion->start(100);
     }
 }
 
@@ -56,11 +71,11 @@ void Jugador::actualizarEstado() {
 }
 
 void Jugador::actualizarSpriteCorrer() {
-    frameActual = (frameActual + 1) % framesCorrer.size();
-    setPixmap(framesCorrer[frameActual]);
+    frameActual = (frameActual + 1) % animaciones[direccionActual].size();
+    setPixmap(animaciones[direccionActual][frameActual]);
 }
 
-void Jugador::actualizarTiempo() {
+void Jugador::actualizarTiempo(){
     if (Obstaculo::juegoPausado) return;
 
     int tiempoTranscurrido = reloj.elapsed();
@@ -69,28 +84,43 @@ void Jugador::actualizarTiempo() {
     textoTiempo->setPlainText(QString("Tiempo restante: %1 s").arg(tiempoRestante));
 
     if (tiempoTranscurrido >= tiempoMaximo) {
-        Obstaculo::pausarJuego(true);
-        temporizador->stop();
 
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Nivel completado\nSaliendo...");
-        emit nivelCompletado();
+        if (temporizador) {
+            temporizador->stop();
+            temporizador->disconnect();
+        }
+        if (timerAnimacion) {
+            timerAnimacion->stop();
+            timerAnimacion->disconnect();
+        }
+
+        setFlag(QGraphicsItem::ItemIsFocusable, false);
+
+        QTimer::singleShot(500, this, [this]() {
+            emit nivelCompletado();
+            Obstaculo::pausarJuego(true);
+        });
     }
 }
 
+
 void Jugador::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
-    case Qt::Key_A:
-        mover(-velocidad, 0);
-        break;
-    case Qt::Key_D:
-        mover(velocidad, 0);
-        break;
-    case Qt::Key_W:
+    case Qt::Key_W: // arriba
         mover(0, -velocidad);
+        direccionActual = 0;
         break;
-    case Qt::Key_S:
+    case Qt::Key_A: // izquierda
+        mover(-velocidad, 0);
+        direccionActual = 1;
+        break;
+    case Qt::Key_S: // abajo
         mover(0, velocidad);
+        direccionActual = 2;
+        break;
+    case Qt::Key_D: // derecha
+        mover(velocidad, 0);
+        direccionActual = 3;
         break;
     default:
         break;
@@ -116,14 +146,5 @@ void Jugador::aparecer() {
         }
         break;
 
-    //case 3:
-
-    default:
-        // Nivel por defecto: balas
-        {
-            Bala *bala = new Bala();
-            scene()->addItem(bala);
-        }
-        break;
     }
 }

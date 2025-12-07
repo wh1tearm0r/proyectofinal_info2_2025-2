@@ -15,7 +15,7 @@ personas::personas()
     if (juegoPausado) return;
 
     // Crear un pixmap cuadrado más grande (50x50)
-    QPixmap spritePersona(50, 50);
+    QPixmap spritePersona(70, 110);
     spritePersona.fill(Qt::transparent);
 
     // Dibujar un cuadrado azul
@@ -32,7 +32,7 @@ personas::personas()
     const int ANCHO_JUEGO = 500;
 
     // Generar posición X entre 150 y 600 (dejando 50px de margen por el sprite)
-    int rand_x = MARGEN_LATERAL + (rand() % (ANCHO_JUEGO - 50));
+    int rand_x = MARGEN_LATERAL + (rand() % (ANCHO_JUEGO - 70));
     posicionInicialX = rand_x;
 
     // Siempre empieza desde arriba (y = 0)
