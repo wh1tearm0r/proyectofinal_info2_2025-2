@@ -36,7 +36,7 @@ void Combate::configurarUI()
     scene->setSceneRect(0, 0, 800, 400);
 
     // Establecer fondo de batalla
-    QPixmap fondoBatalla(":/imagenes/fondo_combate.png");
+    QPixmap fondoBatalla(":/imagenes/Texxturas/fondotroya.png");
     if (!fondoBatalla.isNull()) {
         scene->setBackgroundBrush(fondoBatalla.scaled(800, 400,
                                                       Qt::IgnoreAspectRatio, Qt::SmoothTransformation));

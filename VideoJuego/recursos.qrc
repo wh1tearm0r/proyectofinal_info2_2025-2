@@ -27,5 +27,6 @@
         <file>Texxturas/spritespeleacuracion.png</file>
         <file>Texxturas/spritespeleadefensa.png</file>
         <file>Texxturas/spritespeleaquieto.png</file>
+        <file>Texxturas/fondotroya.png</file>
     </qresource>
 </RCC>

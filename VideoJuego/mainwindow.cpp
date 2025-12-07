@@ -321,7 +321,7 @@ void MainWindow::iniciarNivel3()
     Obstaculo::pausarJuego(false);
     nivelActual = 3;
 
-    establecerFondo(":/imagenes/fondo_combate.png");
+    establecerFondo(":/imagenes/Texxturas/fondotroya.png");
 
     Combate *combate = new Combate(this);
     combate->setGeometry(0, 0, 800, 600);
