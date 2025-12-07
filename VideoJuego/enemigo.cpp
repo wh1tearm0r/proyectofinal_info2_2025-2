@@ -1,22 +1,84 @@
 ﻿#include "enemigo.h"
 #include <QRandomGenerator>
+#include <QTimer>
+#include <QDebug>
 
 Enemigo::Enemigo(QString nombre, int vidaMax, int ataque, int defensa,
                  QString rutaSprite, int nivel, QGraphicsItem *parent)
     : Personaje(parent), nombre(nombre), vidaMaxima(vidaMax),
-    ataque(ataque), defensa(defensa), nivel(nivel), defendiendo(false)
+    ataque(ataque), defensa(defensa), nivel(nivel), defendiendo(false),
+    estadoActual(QUIETO), frameActual(0)
 {
-    this->vida = vidaMax;
+    vida = vidaMaxima;
 
-    QPixmap sprite(rutaSprite);
-    if (sprite.isNull()) {
-        // Si no hay sprite, crear uno por defecto
-        sprite = QPixmap(150, 150);
-        sprite.fill(QColor(200, 50, 50)); // Rojo oscuro
-    }
-    setPixmap(sprite.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    // Animación inicial (quieto)
+    cargarAnimacion(":/imagenes/Texxuras/spritessoldadoquieto.png", 3);
+    setPixmap(frames[0]);
+
+    // Timer de animación
+    timerAnimacion = new QTimer(this);
+    connect(timerAnimacion, &QTimer::timeout, this, &Enemigo::actualizarAnimacion);
+    timerAnimacion->start(120);
 
     inicializarHabilidades();
+}
+
+void Enemigo::cargarAnimacion(const QString &ruta, int columnas)
+{
+    frames.clear();
+    QPixmap spriteSheet(ruta);
+    if (spriteSheet.isNull()) {
+        qWarning() << "Error al cargar sprite enemigo:" << ruta;
+        QPixmap placeholder(120, 120);
+        placeholder.fill(Qt::darkRed);
+        frames.append(placeholder);
+        return;
+    }
+
+    int anchoFrame = spriteSheet.width() / columnas;
+    int altoFrame = spriteSheet.height();
+
+    for (int i = 0; i < columnas; ++i) {
+        QPixmap frame = spriteSheet.copy(i * anchoFrame, 0, anchoFrame, altoFrame)
+        .scaled(120, 120, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        frames.append(frame);
+    }
+}
+
+void Enemigo::reproducirAnimacion(EstadoAnimacion nuevoEstado)
+{
+    estadoActual = nuevoEstado;
+    frameActual = 0;
+
+    switch (estadoActual) {
+    case QUIETO:
+        cargarAnimacion(":/imagenes/Texxturas/spritessoldadoquieto.png", 3);
+        break;
+    case ATAQUE:
+        cargarAnimacion(":/imagenes/Texxturas/spritessoldadoataques.png", 6);
+        break;
+    case DEFENSA:
+        cargarAnimacion(":/imagenes/Texxturas/spritessoldadodefender.png", 6);
+        break;
+    case CURACION:
+        cargarAnimacion(":/imagenes/Texxturas/spritessoldadocuracion.png", 6);
+        break;
+    case CRITICO:
+        cargarAnimacion(":/imagenes/Texxturas/spritessoldadocritico.png", 6);
+        break;
+    case RAPIDO:
+        cargarAnimacion(":/imagenes/Texxturas/spritessoldadoataquerapido.png", 6);
+        break;
+    }
+
+    setPixmap(frames[0]);
+}
+
+void Enemigo::actualizarAnimacion()
+{
+    if (frames.isEmpty()) return;
+    frameActual = (frameActual + 1) % frames.size();
+    setPixmap(frames[frameActual]);
 }
 
 void Enemigo::inicializarHabilidades()
@@ -93,12 +155,15 @@ int Enemigo::decidirAccion()
 
 int Enemigo::atacar()
 {
+    reproducirAnimacion(ATAQUE);
+
     defendiendo = false;
     ultimaAccion = nombre + " ataca!";
 
     // Daño base + variación aleatoria (±20%)
     int variacion = QRandomGenerator::global()->bounded(-ataque/5, ataque/5 + 1);
     int danio = ataque + variacion;
+    QTimer::singleShot(1000, this, [this]() { reproducirAnimacion(QUIETO); });
 
     return danio > 0 ? danio : 1;
 }
@@ -107,6 +172,8 @@ int Enemigo::usarHabilidadAleatoria()
 {
     if (habilidades.isEmpty()) {
         return atacar();
+        reproducirAnimacion(ATAQUE);
+        QTimer::singleShot(1000, this, [this]() { reproducirAnimacion(QUIETO); });
     }
 
     // Seleccionar una habilidad aleatoria
@@ -145,7 +212,9 @@ void Enemigo::recibirDanio(int danio)
 
 void Enemigo::defender()
 {
+    reproducirAnimacion(DEFENSA);
     defendiendo = true;
+    QTimer::singleShot(1000, this, [this]() { reproducirAnimacion(QUIETO); });
 }
 
 bool Enemigo::estaVivo() const

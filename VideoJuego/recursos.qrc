@@ -7,5 +7,25 @@
         <file>Texxturas/SpriteQuieto.png</file>
         <file>Texxturas/spritescorriendo.png</file>
         <file>Texxturas/fondo_chernobyl.png</file>
+        <file>Texxturas/cientifico1.png</file>
+        <file>Texxturas/cientifico2.png</file>
+        <file>Texxturas/cientifico3.png</file>
+        <file>Texxturas/spritescientifico3.png</file>
+        <file>Texxturas/spritescientifico1.png</file>
+        <file>Texxturas/spritescientifico2.png</file>
+        <file>Texxturas/spritessoldado.png</file>
+        <file>Texxturas/spritessoldadoataquerapido.png</file>
+        <file>Texxturas/spritessoldadoataques.png</file>
+        <file>Texxturas/spritessoldadocritico.png</file>
+        <file>Texxturas/spritessoldadocuracion.png</file>
+        <file>Texxturas/spritessoldadodefender.png</file>
+        <file>Texxturas/spritessoldadoquieto.png</file>
+        <file>Texxturas/spritespelea.png</file>
+        <file>Texxturas/spritespeleaataque.png</file>
+        <file>Texxturas/spritespeleaataquerapido.png</file>
+        <file>Texxturas/spritespeleacritico.png</file>
+        <file>Texxturas/spritespeleacuracion.png</file>
+        <file>Texxturas/spritespeleadefensa.png</file>
+        <file>Texxturas/spritespeleaquieto.png</file>
     </qresource>
 </RCC>
