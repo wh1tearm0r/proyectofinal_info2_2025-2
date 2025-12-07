@@ -50,7 +50,7 @@ void MainWindow::configurarEscena()
     scene = new QGraphicsScene(this);
     scene->setSceneRect(0, 0, 800, 600);
 
-    QPixmap fondo(":/imagenes/fondo.png");
+    QPixmap fondo(":/imagenes/Texxturas/Cuarto.png");
     scene->setBackgroundBrush(fondo.scaled(800, 600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
     view = new QGraphicsView(scene, this);
