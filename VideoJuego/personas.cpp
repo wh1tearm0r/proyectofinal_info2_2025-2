@@ -15,7 +15,7 @@ personas::personas()
     if (juegoPausado) return;
 
     // Crear un pixmap cuadrado más grande (50x50)
-    QPixmap spritePersona(50, 50);
+    QPixmap spritePersona(70, 110);
     spritePersona.fill(Qt::transparent);
 
     // Dibujar un cuadrado azul
@@ -27,12 +27,12 @@ personas::personas()
 
     setPixmap(spritePersona);
 
-    // 🎯 IMPORTANTE: Posición aleatoria SOLO dentro del área estrecha (150 a 650)
+    // IMPORTANTE: Posición aleatoria SOLO dentro del área estrecha (150 a 650)
     const int MARGEN_LATERAL = 150;
     const int ANCHO_JUEGO = 500;
 
     // Generar posición X entre 150 y 600 (dejando 50px de margen por el sprite)
-    int rand_x = MARGEN_LATERAL + (rand() % (ANCHO_JUEGO - 50));
+    int rand_x = MARGEN_LATERAL + (rand() % (ANCHO_JUEGO - 70));
     posicionInicialX = rand_x;
 
     // Siempre empieza desde arriba (y = 0)
@@ -117,7 +117,7 @@ void personas::mover(){
     break;
     }
 
-    // 🎯 CRÍTICO: Asegurar que NO salga del área estrecha (150 a 650)
+    // CRÍTICO: Asegurar que NO salga del área estrecha (150 a 650)
     const int MARGEN_LATERAL = 150;
     const int ANCHO_JUEGO = 500;
     const int LIMITE_IZQUIERDO = MARGEN_LATERAL;

@@ -28,9 +28,13 @@ public slots:
     void aparecer();
     void actualizarTiempo();
 
+signals:
+    void nivelCompletado();
+
 private:
     // 🔹 Animaciones
-    QVector<QPixmap> framesCorrer;
+    QVector<QVector<QPixmap>> animaciones;
+    int direccionActual;
     QPixmap spriteQuieto;
     int frameActual;
     QTimer *timerAnimacion;
@@ -38,7 +42,7 @@ private:
     // 🔹 Control del tiempo
     QTimer *temporizador;
     QElapsedTimer reloj;
-    const int tiempoMaximo = 20000; // 20 segundos
+    const int tiempoMaximo = 5000; // 20 segundos
     int nivelActual;
 
     void actualizarSpriteCorrer();

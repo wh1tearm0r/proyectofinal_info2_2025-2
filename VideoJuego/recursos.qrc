@@ -6,5 +6,6 @@
         <file>Texxturas/CampoDeBatalla.png</file>
         <file>Texxturas/SpriteQuieto.png</file>
         <file>Texxturas/spritescorriendo.png</file>
+        <file>Texxturas/fondo_chernobyl.png</file>
     </qresource>
 </RCC>

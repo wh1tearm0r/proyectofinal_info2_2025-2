@@ -27,6 +27,10 @@ public:
     int getVelocidad() const { return velocidad; }
     void setVelocidad(int nuevaVelocidad) { velocidad = nuevaVelocidad; }
 
+    void setLimitesHorizontales(qreal izq, qreal der) {
+        limiteIzquierdo = izq;
+        limiteDerecho = der;
+    }
 protected:
     int vida;
     int velocidad;

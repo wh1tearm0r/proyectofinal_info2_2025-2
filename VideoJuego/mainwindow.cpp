@@ -8,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPixmap>
+#include "obstaculo.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -146,8 +147,11 @@ void MainWindow::ocultarMenu()
 void MainWindow::establecerFondo(const QString &rutaImagen)
 {
     QPixmap fondo(rutaImagen);
-    scene->setBackgroundBrush(fondo.scaled(800, 600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    QBrush brush(fondo.scaled(800, 600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    scene->setBackgroundBrush(brush);
+    scene->update();
 }
+
 
 void MainWindow::crearBordesLateralesNivel2()
 {
@@ -201,30 +205,51 @@ void MainWindow::eliminarBordesLaterales()
 
 void MainWindow::limpiarNivel()
 {
-    // Detener y limpiar timer
-    if(timer) {
+    if (timer) {
         timer->stop();
-        timer->disconnect();
+        timer->deleteLater();
+        timer = nullptr;
     }
 
-    // Eliminar bordes laterales si existen
-    eliminarBordesLaterales();
-
-    // Limpiar todos los items de la escena
-    QList<QGraphicsItem*> items = scene->items();
-    for(auto item : items) {
-        scene->removeItem(item);
-        delete item;
+    if (scene) {
+        delete scene;
+        scene = nullptr;
     }
+
+    scene = new QGraphicsScene(this);
+    scene->setSceneRect(0, 0, 800, 600);
+    view->setScene(scene);  // reconectar la vista a la nueva escena
+
+    scene->setBackgroundBrush(QBrush(Qt::white));
+    scene->update();
 
     jugador = nullptr;
 }
 
+
 void MainWindow::cargarNivel(int nivel)
 {
+    if (timer) {
+        timer->stop();
+        delete timer;
+        timer = nullptr;
+    }
+
+    if (scene) {
+        delete scene;
+        scene = nullptr;
+    }
+
+    scene = new QGraphicsScene(this);
+    scene->setSceneRect(0, 0, 800, 600);
+    view->setScene(scene);
+    scene->setBackgroundBrush(Qt::black);
+    scene->update();
+
+    jugador = nullptr;
     nivelActual = nivel;
 
-    switch(nivel) {
+    switch (nivel) {
     case 1:
         iniciarNivel1();
         break;
@@ -241,9 +266,10 @@ void MainWindow::cargarNivel(int nivel)
     }
 }
 
+
 void MainWindow::iniciarNivel1()
 {
-    limpiarNivel();
+    Obstaculo::pausarJuego(false);
     ocultarMenu();
     nivelActual = 1;
 
@@ -262,28 +288,30 @@ void MainWindow::iniciarNivel1()
 
     // Agregar a la escena
     scene->addItem(jugador);
-    if(jugador->textoTiempo) {
-        scene->addItem(jugador->textoTiempo);
-    }
+    scene->addItem(jugador->textoTiempo);
+
+    connect(jugador, &Jugador::nivelCompletado, this, &MainWindow::siguienteNivel);
 
     // Configurar timer
-    if(!timer) {
-        timer = new QTimer(this);
-    } else {
-        timer->disconnect();
+    if (timer) {
+        timer->stop();
+        timer->deleteLater();
     }
-    connect(timer, &QTimer::timeout, jugador, &Jugador::aparecer);
-    timer->start(450);
+    timer = new QTimer(this);
+        connect(timer, &QTimer::timeout, jugador, &Jugador::aparecer);
+        timer->start(450);
+
 }
 
 void MainWindow::iniciarNivel2()
 {
-    limpiarNivel();
     ocultarMenu();
     nivelActual = 2;
 
+    Obstaculo::pausarJuego(false);
+
     // Establecer fondo para nivel 2
-    // establecerFondo(":/imagenes/Texxturas/CampoDeBatalla.png");
+    establecerFondo(":/imagenes/Texxturas/fondo_chernobyl.png");
 
     // Crear bordes laterales SOLO para nivel 2
     crearBordesLateralesNivel2();
@@ -291,32 +319,42 @@ void MainWindow::iniciarNivel2()
     // Crear jugador
     jugador = new Jugador();
     jugador->setNivel(2);
-    jugador->setPixmap(QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(60, 100));
+    jugador->setPixmap(QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(40, 80));
     jugador->setFlag(QGraphicsItem::ItemIsFocusable);
     jugador->setFocus();
+
+    // Ajustar límites laterales para el área estrecha
+    jugador->setLimitesHorizontales(
+        MARGEN_LATERAL_NIVEL2,
+        MARGEN_LATERAL_NIVEL2 + ANCHO_JUEGO_NIVEL2 - jugador->pixmap().width()
+        );
+
 
     // Posicionar en el centro del área estrecha
     jugador->setPos(MARGEN_LATERAL_NIVEL2 + (ANCHO_JUEGO_NIVEL2 / 2) - (jugador->pixmap().width() / 2),
                     view->height() - jugador->pixmap().height());
 
     scene->addItem(jugador);
-    if(jugador->textoTiempo) {
+    if (jugador->textoTiempo) {
         scene->addItem(jugador->textoTiempo);
+        jugador->textoTiempo->setPlainText("¡¡¡ESCAPA!!!");
     }
 
+    connect(jugador, &Jugador::nivelCompletado, this, &MainWindow::siguienteNivel);
+
     // Configurar timer
-    if(!timer) {
-        timer = new QTimer(this);
-    } else {
-        timer->disconnect();
+    if (timer) {
+        timer->stop();
+        delete timer;
     }
+    timer = new QTimer(this);
     connect(timer, &QTimer::timeout, jugador, &Jugador::aparecer);
     timer->start(400);
 }
 
 void MainWindow::iniciarNivel3()
 {
-    limpiarNivel();
+    Obstaculo::pausarJuego(false);
     ocultarMenu();
     nivelActual = 3;
 
@@ -344,13 +382,33 @@ void MainWindow::iniciarNivel3()
 
 void MainWindow::siguienteNivel()
 {
+    Obstaculo::pausarJuego(true);
+
+    if (timer) {
+        timer->stop();
+        timer->disconnect();
+        timer->deleteLater();
+        timer = nullptr;
+    }
+
+    if (scene) {
+        QList<QGraphicsItem*> items = scene->items();
+        for (auto item : items) {
+            scene->removeItem(item);
+            delete item;
+        }
+    }
+
     nivelActual++;
     if(nivelActual > 3) {
         QMessageBox::information(this, "¡Felicidades!", "¡Has completado todos los niveles!");
         volverAlMenu();
-    } else {
-        cargarNivel(nivelActual);
+        return;
     }
+    QTimer::singleShot(300, [this]() {
+        Obstaculo::pausarJuego(false);
+        cargarNivel(nivelActual);
+    });
 }
 
 void MainWindow::gameOver()
