@@ -50,7 +50,7 @@ void MainWindow::configurarEscena()
     scene = new QGraphicsScene(this);
     scene->setSceneRect(0, 0, 800, 600);
 
-    QPixmap fondo(":/imagenes/fondo.png");
+    QPixmap fondo(":/imagenes/Texxturas/Cuarto.png");
     scene->setBackgroundBrush(fondo.scaled(800, 600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
     view = new QGraphicsView(scene, this);
@@ -321,7 +321,7 @@ void MainWindow::iniciarNivel3()
     Obstaculo::pausarJuego(false);
     nivelActual = 3;
 
-    establecerFondo(":/imagenes/fondo_combate.png");
+    establecerFondo(":/imagenes/Texxturas/fondotroya.png");
 
     Combate *combate = new Combate(this);
     combate->setGeometry(0, 0, 800, 600);
