@@ -36,9 +36,10 @@ public:
     int getAnchoJuegoNivel2() const { return ANCHO_JUEGO_NIVEL2; }
     int getMargenLateralNivel2() const { return MARGEN_LATERAL_NIVEL2; }
 
-private slots:
     void iniciarNivel1();
     void iniciarNivel2();
+
+private slots:
     void iniciarNivel3();
     void siguienteNivel();
     void gameOver();

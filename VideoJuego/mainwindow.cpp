@@ -353,15 +353,25 @@ void MainWindow::siguienteNivel()
         timer = nullptr;
     }
 
-    QTimer::singleShot(300, this, [this]() {
-        Obstaculo::pausarJuego(false);
-        nivelActual++;
-        if(nivelActual > 3) {
-            QMessageBox::information(this, "¡Felicidades!", "¡Has completado todos los niveles!");
-            volverAlMenu();
-        } else {
-            cargarNivel(nivelActual);
+    if (scene) {
+        QList<QGraphicsItem*> items = scene->items();
+        for (auto item : items) {
+            scene->removeItem(item);
+            delete item;
         }
+        scene->clear();
+    }
+
+    nivelActual++;
+    if (nivelActual > 3) {
+        QMessageBox::information(this, "¡Felicidades!", "¡Has completado todos los niveles!");
+        volverAlMenu();
+        return;
+    }
+
+    QTimer::singleShot(300, [this]() {
+        Obstaculo::pausarJuego(false);
+        cargarNivel(nivelActual);
     });
 }
 

@@ -32,6 +32,36 @@ Jugador::Jugador(QGraphicsItem *parent)
             animFila.append(frame);
         }
         animaciones.append(animFila);
+
+    Obstaculo::pausarJuego(false);
+
+        // 🔹 Intentar reconectar automáticamente la señal de nivel completado al MainWindow
+        QObject *ventanaPrincipal = nullptr;
+        for (QObject *obj = this->parent(); obj; obj = obj->parent()) {
+            ventanaPrincipal = obj;
+            if (ventanaPrincipal->inherits("MainWindow")) break;
+        }
+
+        // Si no se encuentra como padre directo, buscar en la jerarquía global
+        if (!ventanaPrincipal) {
+            const QList<QWidget*> ventanas = QApplication::topLevelWidgets();
+            for (QWidget *w : ventanas) {
+                if (w->inherits("MainWindow")) {
+                    ventanaPrincipal = w;
+                    break;
+                }
+            }
+        }
+
+        // Reconectar señal -> MainWindow::siguienteNivel
+        if (ventanaPrincipal) {
+            QObject::connect(this, SIGNAL(nivelCompletado()),
+                             ventanaPrincipal, SLOT(siguienteNivel()),
+                             Qt::UniqueConnection);
+            qDebug() << "Jugador reconectado a MainWindow correctamente.";
+        }
+
+
     }
 
     setPixmap(animaciones[direccionActual][0]);
@@ -95,10 +125,11 @@ void Jugador::actualizarTiempo() {
         }
 
         setFlag(QGraphicsItem::ItemIsFocusable, false);
-        Obstaculo::pausarJuego(true);
 
         QTimer::singleShot(500, this, [this]() {
             emit nivelCompletado();
+            qInfo() << "Nivel completado emitido correctamente desde jugador.";
+
         });
     }
 }
