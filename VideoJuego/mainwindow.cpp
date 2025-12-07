@@ -203,32 +203,7 @@ void MainWindow::eliminarBordesLaterales()
     }
 }
 
-void MainWindow::limpiarNivel()
-{
-    if (timer) {
-        timer->stop();
-        timer->deleteLater();
-        timer = nullptr;
-    }
-
-    if (scene) {
-        delete scene;
-        scene = nullptr;
-    }
-
-    scene = new QGraphicsScene(this);
-    scene->setSceneRect(0, 0, 800, 600);
-    view->setScene(scene);  // reconectar la vista a la nueva escena
-
-    scene->setBackgroundBrush(QBrush(Qt::white));
-    scene->update();
-
-    jugador = nullptr;
-}
-
-
-void MainWindow::cargarNivel(int nivel)
-{
+void MainWindow::limpiarNivel() {
     if (timer) {
         timer->stop();
         delete timer;
@@ -236,17 +211,20 @@ void MainWindow::cargarNivel(int nivel)
     }
 
     if (scene) {
-        delete scene;
-        scene = nullptr;
+        QList<QGraphicsItem*> items = scene->items();
+        for (auto item : items) {
+            scene->removeItem(item);
+            delete item;
+        }
+        scene->clear();
     }
 
-    scene = new QGraphicsScene(this);
-    scene->setSceneRect(0, 0, 800, 600);
-    view->setScene(scene);
-    scene->setBackgroundBrush(Qt::black);
-    scene->update();
-
     jugador = nullptr;
+}
+
+
+void MainWindow::cargarNivel(int nivel) {
+    limpiarNivel();
     nivelActual = nivel;
 
     switch (nivel) {
@@ -269,8 +247,8 @@ void MainWindow::cargarNivel(int nivel)
 
 void MainWindow::iniciarNivel1()
 {
-    Obstaculo::pausarJuego(false);
     ocultarMenu();
+    Obstaculo::pausarJuego(false);
     nivelActual = 1;
 
     establecerFondo(":/imagenes/Texxturas/CampoDeBatalla.png");
@@ -278,7 +256,6 @@ void MainWindow::iniciarNivel1()
     // Crear jugador
     jugador = new Jugador();
     jugador->setNivel(1);
-    jugador->setPixmap(QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(60, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     jugador->setFlag(QGraphicsItem::ItemIsFocusable);
     jugador->setFocus();
 
@@ -292,23 +269,16 @@ void MainWindow::iniciarNivel1()
 
     connect(jugador, &Jugador::nivelCompletado, this, &MainWindow::siguienteNivel);
 
-    // Configurar timer
-    if (timer) {
-        timer->stop();
-        timer->deleteLater();
-    }
     timer = new QTimer(this);
-        connect(timer, &QTimer::timeout, jugador, &Jugador::aparecer);
-        timer->start(450);
-
+    connect(timer, &QTimer::timeout, jugador, &Jugador::aparecer);
+    timer->start(450);
 }
 
 void MainWindow::iniciarNivel2()
 {
     ocultarMenu();
-    nivelActual = 2;
-
     Obstaculo::pausarJuego(false);
+    nivelActual = 2;
 
     // Establecer fondo para nivel 2
     establecerFondo(":/imagenes/Texxturas/fondo_chernobyl.png");
@@ -319,7 +289,6 @@ void MainWindow::iniciarNivel2()
     // Crear jugador
     jugador = new Jugador();
     jugador->setNivel(2);
-    jugador->setPixmap(QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(40, 80));
     jugador->setFlag(QGraphicsItem::ItemIsFocusable);
     jugador->setFocus();
 
@@ -335,18 +304,12 @@ void MainWindow::iniciarNivel2()
                     view->height() - jugador->pixmap().height());
 
     scene->addItem(jugador);
-    if (jugador->textoTiempo) {
-        scene->addItem(jugador->textoTiempo);
-        jugador->textoTiempo->setPlainText("¡¡¡ESCAPA!!!");
-    }
+    scene->addItem(jugador->textoTiempo);
+    jugador->textoTiempo->setPlainText("¡¡¡ESCAPA!!!");
+
 
     connect(jugador, &Jugador::nivelCompletado, this, &MainWindow::siguienteNivel);
 
-    // Configurar timer
-    if (timer) {
-        timer->stop();
-        delete timer;
-    }
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, jugador, &Jugador::aparecer);
     timer->start(400);
@@ -354,8 +317,8 @@ void MainWindow::iniciarNivel2()
 
 void MainWindow::iniciarNivel3()
 {
-    Obstaculo::pausarJuego(false);
     ocultarMenu();
+    Obstaculo::pausarJuego(false);
     nivelActual = 3;
 
     establecerFondo(":/imagenes/fondo_combate.png");
@@ -386,52 +349,48 @@ void MainWindow::siguienteNivel()
 
     if (timer) {
         timer->stop();
-        timer->disconnect();
-        timer->deleteLater();
+        delete timer;
         timer = nullptr;
     }
 
-    if (scene) {
-        QList<QGraphicsItem*> items = scene->items();
-        for (auto item : items) {
-            scene->removeItem(item);
-            delete item;
-        }
-    }
-
-    nivelActual++;
-    if(nivelActual > 3) {
-        QMessageBox::information(this, "¡Felicidades!", "¡Has completado todos los niveles!");
-        volverAlMenu();
-        return;
-    }
-    QTimer::singleShot(300, [this]() {
+    QTimer::singleShot(300, this, [this]() {
         Obstaculo::pausarJuego(false);
-        cargarNivel(nivelActual);
+        nivelActual++;
+        if(nivelActual > 3) {
+            QMessageBox::information(this, "¡Felicidades!", "¡Has completado todos los niveles!");
+            volverAlMenu();
+        } else {
+            cargarNivel(nivelActual);
+        }
     });
 }
 
-void MainWindow::gameOver()
-{
-    if(timer) {
+void MainWindow::gameOver() {
+    Obstaculo::pausarJuego(true);
+
+    if (timer) {
         timer->stop();
+        timer->disconnect();
+    }
+
+    if (jugador) {
+        jugador->blockSignals(true);
     }
 
     QMessageBox::StandardButton respuesta;
-    respuesta = QMessageBox::question(this, "Game Over",
-                                      "¡Has perdido!\n\n¿Quieres intentar de nuevo?",
+    respuesta = QMessageBox::question(this, "PERDISTE",
+                                      "¡INTENTA ESQUIVAR!\n\n¿Quieres intentar de nuevo?",
                                       QMessageBox::Yes | QMessageBox::No);
 
-    if(respuesta == QMessageBox::Yes) {
-        if(nivelActual > 0) {
+    if (respuesta == QMessageBox::Yes) {
+        QTimer::singleShot(200, this, [this]() {
             cargarNivel(nivelActual);
-        } else {
-            volverAlMenu();
-        }
+        });
     } else {
         volverAlMenu();
     }
 }
+
 
 void MainWindow::volverAlMenu()
 {

@@ -15,12 +15,15 @@ void Obstaculo::pausarJuego(bool estado) {
     juegoPausado = estado;
 }
 
-Obstaculo::Obstaculo(QGraphicsItem *parent) : QGraphicsPixmapItem(parent),
+Obstaculo::Obstaculo(QGraphicsItem *parent)
+    : QGraphicsPixmapItem(parent),
     direccion(0)
 {
 }
 
 void Obstaculo::manejarColision() {
+    if (juegoPausado) return;
+
     QList<QGraphicsItem*> colisiones = collidingItems();
 
     for (int i = 0; i < colisiones.size(); i++) {
@@ -28,56 +31,52 @@ void Obstaculo::manejarColision() {
 
             Obstaculo::pausarJuego(true);
 
-            // Quitamos el obstáculo de la escena (sin borrarlo todavía)
-            if (scene()) scene()->removeItem(this);
+            if (scene())
+                scene()->removeItem(this);
 
-            // Marcamos este obstáculo para borrarse luego de forma segura
-            this->deleteLater();
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Game Over");
+            msgBox.setText("Has sido alcanzado.");
+            msgBox.setInformativeText("¿Qué deseas hacer?");
+            msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Close);
+            msgBox.setDefaultButton(QMessageBox::Retry);
 
-            // Mostramos el mensaje sin bloquear la interfaz
-            QTimer::singleShot(100, [=]() {
-                QMessageBox msgBox;
-                msgBox.setWindowTitle("Game Over");
-                msgBox.setText("Has sido alcanzado por una bala.");
-                msgBox.setInformativeText("¿Qué deseas hacer?");
-                msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Close);
-                msgBox.setDefaultButton(QMessageBox::Retry);
+            int ret = msgBox.exec();
 
-                int ret = msgBox.exec();
+            if (ret == QMessageBox::Retry) {
+                // Reiniciar escena
+                QGraphicsScene *escenaActual = colisiones[i]->scene();
 
-                if (ret == QMessageBox::Retry) {
-                    QTimer::singleShot(0, [=]() {
-                        // Reiniciar escena
-                        QGraphicsScene *escenaActual = colisiones[i]->scene();
-                        if (!escenaActual) return;
+                if (escenaActual) {
+                    QList<QGraphicsItem*> elementos = escenaActual->items();
+                    for (auto item : elementos) {
+                        escenaActual->removeItem(item);
+                        delete item;
+                    }
 
+                    // Crear nuevo jugador
+                    Jugador *nuevoJugador = new Jugador();
+                    nuevoJugador->setPixmap(QPixmap(":/imagenes/Texxturas/SpriteQuieto.png")
+                                                .scaled(60, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                    escenaActual->addItem(nuevoJugador);
+                    escenaActual->addItem(nuevoJugador->textoTiempo);
 
+                    nuevoJugador->setFlag(QGraphicsItem::ItemIsFocusable);
+                    nuevoJugador->setFocus();
+                    nuevoJugador->setPos(350, 500);
 
-                        QList<QGraphicsItem*> elementos = escenaActual->items();
-                        for (auto item : elementos) {
-                            escenaActual->removeItem(item);
-                            delete item;
-                        }
-
-                        Jugador *nuevoJugador = new Jugador();
-                        escenaActual->addItem(nuevoJugador);
-                        escenaActual->addItem(nuevoJugador->textoTiempo);
-
-                        nuevoJugador->setFlag(QGraphicsItem::ItemIsFocusable);
-                        nuevoJugador->setFocus();
-                        nuevoJugador->setPos(350, 500);
-
-                        QTimer *timer = new QTimer();
-                        QObject::connect(timer, SIGNAL(timeout()), nuevoJugador, SLOT(aparecer()));
-                        timer->start(500);
-
-                        Obstaculo::pausarJuego(false);
-                    });
-                } else {
-                    QTimer::singleShot(0, qApp, &QApplication::quit);
+                    // Reiniciar obstáculos con un timer nuevo
+                    QTimer *timer = new QTimer();
+                    QObject::connect(timer, SIGNAL(timeout()), nuevoJugador, SLOT(aparecer()));
+                    timer->start(500);
                 }
-            });
 
+                Obstaculo::pausarJuego(false);
+            } else {
+                qApp->exit(0);
+            }
+
+            deleteLater();
             return;
         }
     }

@@ -17,9 +17,7 @@ Jugador::Jugador(QGraphicsItem *parent)
     const int anchoEscalado = 100;
     const int altoEscalado = 140;
 
-    spriteQuieto = QPixmap(":/imagenes/Texxturas/SpriteQuieto.png").scaled(anchoEscalado, altoEscalado, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    setPixmap(spriteQuieto);
-
+    // --- Preparar spritesheet ---
     QPixmap spriteSheet(":/imagenes/Texxturas/spritescorriendo.png");
     int columnas = 8;
     int filas = 4;
@@ -38,15 +36,18 @@ Jugador::Jugador(QGraphicsItem *parent)
 
     setPixmap(animaciones[direccionActual][0]);
 
+    //Animación
     timerAnimacion = new QTimer(this);
     connect(timerAnimacion, &QTimer::timeout, this, &Jugador::actualizarSpriteCorrer);
     timerAnimacion->start(100);
 
+    //Tiempo de nivel
     reloj.start();
     temporizador = new QTimer(this);
-    connect(temporizador, SIGNAL(timeout()), this, SLOT(actualizarTiempo()));
+    connect(temporizador, &QTimer::timeout, this, &Jugador::actualizarTiempo);
     temporizador->start(100);
 
+    //Texto del tiempo
     textoTiempo = new QGraphicsTextItem();
     textoTiempo->setDefaultTextColor(Qt::white);
     textoTiempo->setFont(QFont("Arial", 16, QFont::Bold));
@@ -67,7 +68,7 @@ void Jugador::mover(int dx, int dy) {
 
 void Jugador::actualizarEstado() {
     timerAnimacion->stop();
-    setPixmap(spriteQuieto);
+    setPixmap(animaciones[direccionActual][0]);
 }
 
 void Jugador::actualizarSpriteCorrer() {
@@ -75,7 +76,7 @@ void Jugador::actualizarSpriteCorrer() {
     setPixmap(animaciones[direccionActual][frameActual]);
 }
 
-void Jugador::actualizarTiempo(){
+void Jugador::actualizarTiempo() {
     if (Obstaculo::juegoPausado) return;
 
     int tiempoTranscurrido = reloj.elapsed();
@@ -84,7 +85,6 @@ void Jugador::actualizarTiempo(){
     textoTiempo->setPlainText(QString("Tiempo restante: %1 s").arg(tiempoRestante));
 
     if (tiempoTranscurrido >= tiempoMaximo) {
-
         if (temporizador) {
             temporizador->stop();
             temporizador->disconnect();
@@ -95,30 +95,29 @@ void Jugador::actualizarTiempo(){
         }
 
         setFlag(QGraphicsItem::ItemIsFocusable, false);
+        Obstaculo::pausarJuego(true);
 
         QTimer::singleShot(500, this, [this]() {
             emit nivelCompletado();
-            Obstaculo::pausarJuego(true);
         });
     }
 }
 
-
 void Jugador::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
-    case Qt::Key_W: // arriba
+    case Qt::Key_W:
         mover(0, -velocidad);
         direccionActual = 0;
         break;
-    case Qt::Key_A: // izquierda
+    case Qt::Key_A:
         mover(-velocidad, 0);
         direccionActual = 1;
         break;
-    case Qt::Key_S: // abajo
+    case Qt::Key_S:
         mover(0, velocidad);
         direccionActual = 2;
         break;
-    case Qt::Key_D: // derecha
+    case Qt::Key_D:
         mover(velocidad, 0);
         direccionActual = 3;
         break;
@@ -128,23 +127,18 @@ void Jugador::keyPressEvent(QKeyEvent *event) {
 }
 
 void Jugador::aparecer() {
-    // Crear obstáculos según el nivel actual
-    switch(nivelActual) {
+    Obstaculo *nuevo = nullptr;
+
+    switch (nivelActual) {
     case 1:
-        // Nivel 1: Solo balas
-        {
-            Bala *bala = new Bala();
-            scene()->addItem(bala);
-        }
+        nuevo = new Bala();
         break;
-
     case 2:
-        // Nivel 2: Solo personas
-        {
-            personas *persona = new personas();
-            scene()->addItem(persona);
-        }
+        nuevo = new personas();
         break;
+    }
 
+    if (nuevo && scene()) {
+        scene()->addItem(nuevo);
     }
 }
