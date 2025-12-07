@@ -4,6 +4,9 @@
 #include "personaje.h"
 #include <QString>
 #include <QList>
+#include <QTimer>
+#include <QVector>
+#include <QPixmap>
 
 struct HabilidadEnemigo {
     QString nombre;
@@ -42,6 +45,9 @@ signals:
     void murio();
     void vidaCambio(int vidaActual, int vidaMaxima);
 
+private slots:
+    void actualizarAnimacion();
+
 private:
     QString nombre;
     int vidaMaxima;
@@ -52,7 +58,23 @@ private:
     QString ultimaAccion;
     QList<HabilidadEnemigo> habilidades;
 
+    enum EstadoAnimacion {
+        QUIETO,
+        ATAQUE,
+        DEFENSA,
+        CURACION,
+        CRITICO,
+        RAPIDO
+    };
+
+    EstadoAnimacion estadoActual;
+    QVector<QPixmap> frames;
+    QTimer *timerAnimacion;
+    int frameActual;
+
     void inicializarHabilidades();
+    void cargarAnimacion(const QString &ruta, int columnas);
+    void reproducirAnimacion(EstadoAnimacion nuevoEstado);
 };
 
 #endif // ENEMIGO_H

@@ -20,5 +20,12 @@
         <file>Texxturas/spritessoldadocuracion.png</file>
         <file>Texxturas/spritessoldadodefender.png</file>
         <file>Texxturas/spritessoldadoquieto.png</file>
+        <file>Texxturas/spritespelea.png</file>
+        <file>Texxturas/spritespeleaataque.png</file>
+        <file>Texxturas/spritespeleaataquerapido.png</file>
+        <file>Texxturas/spritespeleacritico.png</file>
+        <file>Texxturas/spritespeleacuracion.png</file>
+        <file>Texxturas/spritespeleadefensa.png</file>
+        <file>Texxturas/spritespeleaquieto.png</file>
     </qresource>
 </RCC>
