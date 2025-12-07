@@ -12,7 +12,7 @@ Enemigo::Enemigo(QString nombre, int vidaMax, int ataque, int defensa,
     vida = vidaMaxima;
 
     // Animación inicial (quieto)
-    cargarAnimacion(":/imagenes/Texxuras/spritessoldadoquieto.png", 3);
+    cargarAnimacion(":/imagenes/Texxturas/spritessoldadoquieto.png", 3);
     setPixmap(frames[0]);
 
     // Timer de animación

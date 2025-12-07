@@ -110,7 +110,7 @@ void jugadorCombate::inicializarHabilidades()
 
 void jugadorCombate::mover(int dx, int dy)
 {
-    //Combate por turnos, por lo tanto no hay movimientos, sin embargo, se pueden agregar animaciones
+    //Combate por turnos, por lo tanto no hay movimientos
 }
 
 void jugadorCombate::actualizarEstado()

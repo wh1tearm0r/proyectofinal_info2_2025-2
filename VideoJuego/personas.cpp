@@ -110,7 +110,6 @@ void personas::mover(){
     case 1: // Movimiento zigzag (triangular)
     {
         // Crear una función triangular para zigzag
-        qreal periodo = 360.0 / frecuencia;
         qreal fase = fmod(contadorOscilacion * frecuencia, 360.0);
         qreal valorTriangular;
 

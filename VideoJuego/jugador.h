@@ -32,17 +32,17 @@ signals:
     void nivelCompletado();
 
 private:
-    // 🔹 Animaciones
+    // Animaciones
     QVector<QVector<QPixmap>> animaciones;
     int direccionActual;
     QPixmap spriteQuieto;
     int frameActual;
     QTimer *timerAnimacion;
 
-    // 🔹 Control del tiempo
+    // Control del tiempo
     QTimer *temporizador;
     QElapsedTimer reloj;
-    const int tiempoMaximo = 5000; // 20 segundos
+    const int tiempoMaximo = 8000; // 20 segundos
     int nivelActual;
 
     void actualizarSpriteCorrer();

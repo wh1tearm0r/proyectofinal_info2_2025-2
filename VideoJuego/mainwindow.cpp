@@ -328,6 +328,8 @@ void MainWindow::iniciarNivel3()
     combate->show();
     combate->raise();
 
+    combate->iniciarCombate();
+
     connect(combate, &Combate::combateTerminado, this,
             [this, combate](bool victoria) {
                 if (victoria) {
@@ -339,8 +341,6 @@ void MainWindow::iniciarNivel3()
                 }
                 combate->deleteLater();
             });
-
-    combate->iniciarCombate();
 }
 
 void MainWindow::siguienteNivel()
