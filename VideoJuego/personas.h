@@ -14,9 +14,15 @@ public:
 
 public slots:
     void mover() override;
+    void actualizarAnimacion();
 
 private:
     QTimer* timer;
+    QTimer* timerMovimiento;
+    QTimer* timerAnimacion;
+    QVector<QPixmap> frames;
+    int frameActual;
+    int varianteSprite;
 
     // Variables para el movimiento oscilatorio
     int velocidadY;           // Velocidad vertical (hacia abajo)

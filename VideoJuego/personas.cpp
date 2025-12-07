@@ -14,18 +14,28 @@ personas::personas()
 {
     if (juegoPausado) return;
 
-    // Crear un pixmap cuadrado más grande (50x50)
-    QPixmap spritePersona(70, 110);
-    spritePersona.fill(Qt::transparent);
+    varianteSprite = rand() % 3; // 3 variantes posibles
 
-    // Dibujar un cuadrado azul
-    QPainter painter(&spritePersona);
-    painter.setBrush(QBrush(QColor(30, 144, 255))); // Azul dodger
-    painter.setPen(QPen(Qt::white, 2)); // Borde blanco
-    painter.drawRect(2, 2, 46, 46);
-    painter.end();
+    QString rutaSprite;
+    switch (varianteSprite) {
+    case 0: rutaSprite = ":/imagenes/Texxturas/spritescientifico1.png"; break;
+    case 1: rutaSprite = ":/imagenes/Texxturas/spritescientifico2.png"; break;
+    default: rutaSprite = ":/imagenes/Texxturas/spritescientifico3.png"; break;
+    }
 
-    setPixmap(spritePersona);
+    QPixmap spriteSheet(rutaSprite);
+    int columnas = 8;   // número de frames horizontales
+    int filas = 1;      // una sola fila de animación
+    int anchoFrame = spriteSheet.width() / columnas;
+    int altoFrame = spriteSheet.height() / filas;
+
+    for (int col = 0; col < columnas; col++) {
+        QPixmap frame = spriteSheet.copy(col * anchoFrame, 0, anchoFrame, altoFrame)
+        .scaled(70, 120, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        frames.append(frame);
+    }
+
+    setPixmap(frames[0]); // primer frame visible
 
     // IMPORTANTE: Posición aleatoria SOLO dentro del área estrecha (150 a 650)
     const int MARGEN_LATERAL = 150;
@@ -63,9 +73,20 @@ personas::personas()
         break;
     }
 
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(mover()));
-    timer->start(30);
+    timerMovimiento = new QTimer(this);
+    connect(timerMovimiento, SIGNAL(timeout()), this, SLOT(mover()));
+    timerMovimiento->start(30);
+
+    timerAnimacion = new QTimer(this);
+    connect(timerAnimacion, SIGNAL(timeout()), this, SLOT(actualizarAnimacion()));
+    timerAnimacion->start(100);
+}
+
+void personas::actualizarAnimacion() {
+    if (juegoPausado) return;
+
+    frameActual = (frameActual + 1) % frames.size();
+    setPixmap(frames[frameActual]);
 }
 
 void personas::mover(){
